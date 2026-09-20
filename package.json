@@ -11,13 +11,10 @@
 		"icu"
 	],
 	"license": "MIT",
-	"author": {
-		"name": "Chun Nam Wong",
-		"url": "https://chunnamwong.com"
-	},
+	"author": "Ray Wong",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/chunnamwong/sveltext.git"
+		"url": "git+https://github.com/raycnwong/sveltext.git"
 	},
 	"type": "module",
 	"main": "index.js",

@@ -8,8 +8,8 @@ Because SvelteKit supports both SPA and SSR rendering, `sveltext` is designed as
 
 Detailed documentation and a setup wizard are currently **WIP**. In the meantime, the easiest way to understand the setup is to look at the official example apps:
 
-- **[SvelteKit SSR Example](https://github.com/chunnamwong/sveltext/tree/main/examples/ssr)** - Demonstrates cookie-based and `Accept-Language` header locale detection and server hooks.
-- **[SvelteKit SPA Example](https://github.com/chunnamwong/sveltext/tree/main/examples/spa)** - Demonstrates client-side routing, `localStorage`, and `navigator.language` detection.
+- **[SvelteKit SSR Example](https://github.com/raycnwong/sveltext/tree/main/examples/ssr)** - Demonstrates cookie-based and `Accept-Language` header locale detection and server hooks.
+- **[SvelteKit SPA Example](https://github.com/raycnwong/sveltext/tree/main/examples/spa)** - Demonstrates client-side routing, `localStorage`, and `navigator.language` detection.
 
 ### The Core Concept (Manual Setup)
 

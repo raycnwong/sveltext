@@ -11,7 +11,7 @@ permissions: {}
 
 jobs:
   release:
-    if: github.repository == 'chunnamwong/sveltext'
+    if: github.repository == 'raycnwong/sveltext'
     permissions:
       contents: write
       pull-requests: write

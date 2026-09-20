@@ -13,13 +13,13 @@ A compiled, Svelte-first i18n library with Gettext-like syntax and ICU plurals.
 
 | Example                                                                     | Online IDE                                                                                                                                                                                                                                                                                                                   |
 | --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [SSR](https://github.com/chunnamwong/sveltext/tree/main/examples/ssr)       | [![Open in SvelteLab](https://docs.sveltelab.dev/button/dark_short.svg)](https://sveltelab.dev/github.com/chunnamwong/sveltext/tree/main/examples/ssr) [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/chunnamwong/sveltext/tree/main/examples/ssr)       |
-| [SPA](https://github.com/chunnamwong/sveltext/tree/main/examples/spa)       | [![Open in SvelteLab](https://docs.sveltelab.dev/button/dark_short.svg)](https://sveltelab.dev/github.com/chunnamwong/sveltext/tree/main/examples/spa) [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/chunnamwong/sveltext/tree/main/examples/spa)       |
-| [Svelte](https://github.com/chunnamwong/sveltext/tree/main/examples/svelte) | [![Open in SvelteLab](https://docs.sveltelab.dev/button/dark_short.svg)](https://sveltelab.dev/github.com/chunnamwong/sveltext/tree/main/examples/svelte) [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/chunnamwong/sveltext/tree/main/examples/svelte) |
+| [SSR](https://github.com/raycnwong/sveltext/tree/main/examples/ssr)       | [![Open in SvelteLab](https://docs.sveltelab.dev/button/dark_short.svg)](https://sveltelab.dev/github.com/raycnwong/sveltext/tree/main/examples/ssr) [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/raycnwong/sveltext/tree/main/examples/ssr)       |
+| [SPA](https://github.com/raycnwong/sveltext/tree/main/examples/spa)       | [![Open in SvelteLab](https://docs.sveltelab.dev/button/dark_short.svg)](https://sveltelab.dev/github.com/raycnwong/sveltext/tree/main/examples/spa) [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/raycnwong/sveltext/tree/main/examples/spa)       |
+| [Svelte](https://github.com/raycnwong/sveltext/tree/main/examples/svelte) | [![Open in SvelteLab](https://docs.sveltelab.dev/button/dark_short.svg)](https://sveltelab.dev/github.com/raycnwong/sveltext/tree/main/examples/svelte) [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/raycnwong/sveltext/tree/main/examples/svelte) |
 
 ## 📦 Getting Started
 
-Please follow the [Setup Guide](https://github.com/chunnamwong/sveltext/blob/main/docs/getting-started.md) to install and configure `sveltext`.
+Please follow the [Setup Guide](https://github.com/raycnwong/sveltext/blob/main/docs/getting-started.md) to install and configure `sveltext`.
 
 ## 📖 Usage
 
@@ -182,4 +182,4 @@ The API design and AOT-compilation philosophy were heavily inspired by [Lingui](
 
 ## License
 
-[MIT](https://github.com/chunnamwong/sveltext/blob/main/LICENSE)
+[MIT](https://github.com/raycnwong/sveltext/blob/main/LICENSE)
