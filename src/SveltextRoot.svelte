@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import type { MessageCatalog } from './runtime.js';
-	import { setLocale } from './runtime.js';
+	import type { MessageCatalog } from './runtime';
+	import { setLocale } from './runtime';
 
 	interface Props {
 		locale: string;

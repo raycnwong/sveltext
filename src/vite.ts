@@ -1,21 +1,22 @@
 import MagicString from 'magic-string';
 import { parse } from 'svelte/compiler';
 import { Parser } from 'acorn';
+import type { PluginOption } from 'vite';
 import { tsPlugin } from '@sveltejs/acorn-typescript';
-import gettextParser from 'gettext-parser';
+import { po } from 'gettext-parser';
 import {
 	resolveConfig,
 	traverse,
 	generateMessageId,
 	transformTaggedTemplateExpression,
-} from './core.js';
-import { parseMessage } from './po.js';
+} from './core.ts';
+import type { TraverseState } from './core.ts';
+import { parseMessage } from './po.ts';
 
 /**
  * Returns the Vite plugins.
- * @returns {Promise<import('vite').PluginOption>}
  */
-export async function sveltext() {
+export async function sveltext(): Promise<PluginOption[]> {
 	const TsParser = Parser.extend(tsPlugin());
 	const sveltextConfig = await resolveConfig();
 
@@ -33,7 +34,6 @@ export async function sveltext() {
 
 				const s = new MagicString(code);
 
-				/** @type {import('./core.js').AST} */
 				let ast;
 				if (id.endsWith('.svelte')) {
 					ast = parse(code, { modern: true });
@@ -45,8 +45,7 @@ export async function sveltext() {
 					});
 				}
 
-				/** @type {import('./core.js').State} */
-				const state = { tImport: null, messages: [], error: null };
+				const state: TraverseState = { tImport: null, messages: [], error: null };
 
 				traverse(ast, state, sveltextConfig.sourceLocale);
 
@@ -69,7 +68,8 @@ export async function sveltext() {
 						state.messages.filter(({ tagName }) => tagName !== 'msg').length > 0
 					) {
 						s.appendRight(
-							/** @type {any} */ (ast).instance.content.start,
+							// FIXME: Remove `any` type cast
+							(ast as any).instance.content.start,
 							`import { createSveltextTFunction } from 'sveltext/internal';
 const t = createSveltextTFunction();`,
 						);
@@ -97,7 +97,7 @@ const t = createSveltextTFunction();`,
 				if (!id.endsWith('.po')) {
 					return;
 				}
-				const parsedPo = gettextParser.po.parse(code);
+				const parsedPo = po.parse(code);
 				const messages = Object.create(null);
 
 				for (const translations of Object.values(parsedPo.translations)) {
