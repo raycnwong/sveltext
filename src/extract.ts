@@ -1,17 +1,28 @@
 import { program, Command } from 'commander';
 import { parse } from 'svelte/compiler';
-import gettextParser from 'gettext-parser';
+import { po } from 'gettext-parser';
+import type { GetTextPoCompilerOptions, GetTextTranslations } from 'gettext-parser';
 import { Parser } from 'acorn';
 import { tsPlugin } from '@sveltejs/acorn-typescript';
 import fs from 'node:fs/promises';
 import { styleText } from 'node:util';
 import path from 'node:path';
-import { resolveConfig, traverse } from './core.js';
+import { resolveConfig, traverse } from './core.ts';
+import type { TraverseState } from './core.ts';
+
+interface ExtractState {
+	startTime: number;
+	messageCount: number;
+	contextualMessageCount: number;
+	scannedFiles: number;
+	catalogs: string[];
+	messages: Map<any, any>;
+}
 
 export async function runExtract() {
 	const TsParser = Parser.extend(tsPlugin());
 
-	const state = {
+	const state: ExtractState = {
 		startTime: Date.now(),
 		messageCount: 0,
 		contextualMessageCount: 0,
@@ -27,9 +38,7 @@ export async function runExtract() {
 	)) {
 		const code = (await fs.readFile(entry)).toString('utf-8');
 		if (code.includes('sveltext')) {
-			/** @type {import('./core.js').State} */
-			let _state = { messages: [], error: null, tImport: null };
-			/** @type {import('./core.js').AST} */
+			let _state: TraverseState = { messages: [], error: null, tImport: null };
 			let ast;
 
 			if (entry.endsWith('.svelte')) {
@@ -65,7 +74,7 @@ export async function runExtract() {
 	)) {
 		state.catalogs.push(path.basename(entry));
 		const code = (await fs.readFile(entry)).toString('utf-8');
-		const parsedPo = gettextParser.po.parse(code);
+		const parsedPo = po.parse(code) as Required<GetTextTranslations>;
 		let pr;
 		try {
 			pr = new Intl.PluralRules(parsedPo.headers.Language);
@@ -164,7 +173,7 @@ export async function runExtract() {
 
 		await fs.writeFile(
 			entry,
-			gettextParser.po.compile(parsedPo, {
+			po.compile(parsedPo, {
 				foldLength: 0,
 				sort,
 			}),
@@ -183,11 +192,11 @@ Done in ${bold(`${duration}ms`)}
 `);
 }
 
-function bold(text) {
+function bold(text: number | string) {
 	return styleText(['bold'], text.toString());
 }
 
-function sort({ msgid: left }, { msgid: right }) {
+const sort: GetTextPoCompilerOptions['sort'] = ({ msgid: left }, { msgid: right }) => {
 	const lowerLeft = left.toLowerCase();
 	const lowerRight = right.toLowerCase();
 
@@ -200,7 +209,7 @@ function sort({ msgid: left }, { msgid: right }) {
 	}
 
 	return 0;
-}
+};
 
 export const extract = new Command('extract')
 	.description('Extract messages from source code files')

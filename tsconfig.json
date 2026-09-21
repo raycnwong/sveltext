@@ -1,0 +1,11 @@
+{
+	"compilerOptions": {
+		"strict": true,
+		"module": "esnext",
+		"target": "esnext",
+		"moduleResolution": "Bundler",
+		"allowImportingTsExtensions": true,
+		"rewriteRelativeImportExtensions": true
+	},
+	"include": ["src"]
+}
