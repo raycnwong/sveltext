@@ -11,15 +11,15 @@
 		"format": "prettier --write ."
 	},
 	"devDependencies": {
-		"@sveltejs/vite-plugin-svelte": "^7.1.2",
+		"@sveltejs/vite-plugin-svelte": "^6.2.4",
 		"@tsconfig/svelte": "^5.0.8",
-		"@types/node": "^24.13.2",
+		"@types/node": "^24",
 		"prettier": "^3.8.1",
 		"prettier-plugin-svelte": "^3.5.0",
 		"svelte": "^5.56.4",
 		"svelte-check": "^4.7.1",
 		"sveltext": "latest",
 		"typescript": "~6.0.2",
-		"vite": "^8.1.1"
+		"vite": "^7.3.1"
 	}
 }
