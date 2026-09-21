@@ -1,5 +1,11 @@
 # sveltext
 
+## 0.1.2
+
+### Patch Changes
+
+- [#14](https://github.com/raycnwong/sveltext/pull/14) [`ceae843`](https://github.com/raycnwong/sveltext/commit/ceae843e9e4b1a86186f6466e6f89e80860a1402) Thanks [@raycnwong](https://github.com/raycnwong)! - refactor: migrate to TypeScript
+
 ## 0.1.1
 
 ### Patch Changes
