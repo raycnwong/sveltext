@@ -1,23 +1,13 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
-	import { getMessage, getSveltextContext } from './runtime';
-	import type { MessageDescriptor } from './runtime';
-
-	interface Props {
-		msg: MessageDescriptor;
-		[key: string]: MessageDescriptor | Snippet;
-	}
-
-	let { msg, ...snippets }: Props = $props();
-
+	import { getMessage, getSveltextContext } from './runtime.js';
 	const context = getSveltextContext();
-	let parts = $derived(getMessage(msg.id, context.messages)) as (keyof typeof snippets)[];
+	let { msg, ...snippets } = $props();
+	let parts = $derived(getMessage(msg.id, context.messages));
 </script>
 
 {#each parts as part, index (index)}
 	{#if part in snippets}
-		{@const snippet = snippets[part] as Snippet}
-		{@render snippet()}
+		{@render snippets[part]?.()}
 	{:else if msg.args && part in msg.args}
 		{msg.args[part]}
 	{:else}

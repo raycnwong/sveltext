@@ -1,22 +1,21 @@
 import MagicString from 'magic-string';
 import { parse } from 'svelte/compiler';
 import { Parser } from 'acorn';
-import type { PluginOption } from 'vite';
 import { tsPlugin } from '@sveltejs/acorn-typescript';
-import { po } from 'gettext-parser';
+import gettextParser from 'gettext-parser';
 import {
 	resolveConfig,
 	traverse,
 	generateMessageId,
 	transformTaggedTemplateExpression,
-} from './core.ts';
-import type { TraverseState } from './core.ts';
-import { parseMessage } from './po.ts';
+} from './core.js';
+import { parseMessage } from './po.js';
 
 /**
  * Returns the Vite plugins.
+ * @returns {Promise<import('vite').PluginOption>}
  */
-export async function sveltext(): Promise<PluginOption[]> {
+export async function sveltext() {
 	const TsParser = Parser.extend(tsPlugin());
 	const sveltextConfig = await resolveConfig();
 
@@ -34,6 +33,7 @@ export async function sveltext(): Promise<PluginOption[]> {
 
 				const s = new MagicString(code);
 
+				/** @type {import('./core.js').AST} */
 				let ast;
 				if (id.endsWith('.svelte')) {
 					ast = parse(code, { modern: true });
@@ -45,7 +45,8 @@ export async function sveltext(): Promise<PluginOption[]> {
 					});
 				}
 
-				const state: TraverseState = { tImport: null, messages: [], error: null };
+				/** @type {import('./core.js').State} */
+				const state = { tImport: null, messages: [], error: null };
 
 				traverse(ast, state, sveltextConfig.sourceLocale);
 
@@ -68,8 +69,7 @@ export async function sveltext(): Promise<PluginOption[]> {
 						state.messages.filter(({ tagName }) => tagName !== 'msg').length > 0
 					) {
 						s.appendRight(
-							// FIXME: Remove `any` type cast
-							(ast as any).instance.content.start,
+							/** @type {any} */ (ast).instance.content.start,
 							`import { createSveltextTFunction } from 'sveltext/internal';
 const t = createSveltextTFunction();`,
 						);
@@ -97,7 +97,7 @@ const t = createSveltextTFunction();`,
 				if (!id.endsWith('.po')) {
 					return;
 				}
-				const parsedPo = po.parse(code);
+				const parsedPo = gettextParser.po.parse(code);
 				const messages = Object.create(null);
 
 				for (const translations of Object.values(parsedPo.translations)) {

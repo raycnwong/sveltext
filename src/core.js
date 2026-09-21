@@ -1,59 +1,55 @@
-import { walk, type Visitors } from 'zimmerframe';
-import type { default as MagicString } from 'magic-string';
-import type { Expression, Program, TaggedTemplateExpression } from 'acorn';
-import type { AST as SvelteAST } from 'svelte/compiler';
+import { walk } from 'zimmerframe';
 import crypto from 'crypto';
 import path from 'node:path';
 
-export type WithPositions<T> = T extends { type: string }
-	? T & { start: number; end: number }
-	: never;
+/**
+ * @typedef AST
+ * @type {import('svelte/compiler').AST.SvelteNode | import('acorn').Program}
+ */
 
-export type AST = WithPositions<SvelteAST.SvelteNode | Program>;
+/**
+ * @typedef ExtractedPluralMessage
+ * @property {string} context
+ * @property {string} message
+ * @property {number} start
+ * @property {number} end
+ * @property {string[]} expressions
+ * @property {'plural'} tagName
+ */
 
-interface ExtractedMessageBase {
-	context: string;
-	message: string;
-	start: number;
-	end: number;
-}
+/**
+ * @typedef ExtractedRegularMessage
+ * @property {string} context
+ * @property {string} message
+ * @property {number} start
+ * @property {number} end
+ * @property {import('acorn').Expression[]} expressions
+ * @property {'t' | 'msg'} tagName
+ */
 
-interface ExtractedRegularMessage extends ExtractedMessageBase {
-	expressions: Expression[];
-	tagName: 't' | 'msg';
-}
+/**
+ * @typedef ExtractedMessage
+ * @type {ExtractedRegularMessage | ExtractedPluralMessage}
+ */
 
-interface ExtractedPluralMessage extends ExtractedMessageBase {
-	expressions: string[];
-	tagName: 'plural';
-}
+/**
+ * @typedef TImport
+ * @property {{ start: number; end: number; count: number }} specifier
+ * @property {{ start: number; end: number }} declaration
+ */
 
-type ExtractedMessage = ExtractedRegularMessage | ExtractedPluralMessage;
+/**
+ * @typedef StateError
+ * @property {number} start
+ * @property {string} message
+ */
 
-interface TImport {
-	specifier: { start: number; end: number; count: number };
-	declaration: { start: number; end: number };
-}
-
-interface TraverseStateError {
-	start: number;
-	message: string;
-}
-
-export interface TraverseState {
-	tImport: TImport | null;
-	messages: ExtractedMessage[];
-	error: TraverseStateError | null;
-}
-
-interface Config {
-	locales: string[];
-	sourceLocale: string;
-	catalog: {
-		path: string;
-		include: string[];
-	};
-}
+/**
+ * @typedef State
+ * @property {TImport | null} tImport
+ * @property {ExtractedMessage[]} messages
+ * @property {StateError | null} error
+ */
 
 export async function resolveConfig() {
 	const { default: config } = await import(path.join(process.cwd(), 'sveltext.config.js'));
@@ -78,12 +74,17 @@ export async function resolveConfig() {
 		throw new Error('Malformed catalog config');
 	}
 
-	return config as Config;
+	return config;
 }
 
 const UNIT_SEPARATOR = '\u001F';
 
-export function generateMessageId(msg: string, context: string = '') {
+/**
+ * @param {string} msg
+ * @param {string} context
+ * @returns {string}
+ */
+export function generateMessageId(msg, context = '') {
 	const handledMsg = msg + UNIT_SEPARATOR + (context || '');
 
 	if (process.env.NODE_ENV === 'development') {
@@ -93,7 +94,12 @@ export function generateMessageId(msg: string, context: string = '') {
 	return crypto.createHash('sha256').update(handledMsg).digest('base64').slice(0, 6);
 }
 
-function inferVariableName(node: Expression, index: number) {
+/**
+ * @param {import('acorn').Expression} node
+ * @param {number} index
+ * @returns {string | number}
+ */
+function inferVariableName(node, index) {
 	if (node.type === 'Identifier') {
 		return node.name;
 	}
@@ -105,7 +111,11 @@ function inferVariableName(node: Expression, index: number) {
 	return index;
 }
 
-function normalizeTaggedTemplateExpression(node: TaggedTemplateExpression) {
+/**
+ * @param {import('acorn').TaggedTemplateExpression} node
+ * @returns {{ message: string; expressions: import('acorn').Expression[] }}
+ */
+function normalizeTaggedTemplateExpression(node) {
 	let message = '';
 	const { quasis, expressions } = node.quasi;
 
@@ -121,9 +131,14 @@ function normalizeTaggedTemplateExpression(node: TaggedTemplateExpression) {
 	return { message, expressions };
 }
 
+/**
+ * @param {import('magic-string').default} s
+ * @param {ExtractedMessage} message
+ * @returns {void}
+ */
 export function transformTaggedTemplateExpression(
-	s: MagicString,
-	{ start, end, message, tagName, context, expressions }: ExtractedMessage,
+	s,
+	{ start, end, message, tagName, context, expressions },
 ) {
 	const id = generateMessageId(message, context);
 	const idLiteral = JSON.stringify(id);
@@ -170,8 +185,13 @@ export function transformTaggedTemplateExpression(
 	}
 }
 
-export function traverse(ast: AST, state: TraverseState, sourceLocale: string) {
-	const visitors: Visitors<AST, TraverseState> = {
+/**
+ * @param {AST} ast
+ * @param {State} state
+ * @param {string} sourceLocale
+ */
+export function traverse(ast, state, sourceLocale) {
+	walk(ast, state, {
 		ImportDeclaration(node, { next, state }) {
 			if (node.source.value === 'sveltext') {
 				const tImport = node.specifiers.find(
@@ -182,8 +202,8 @@ export function traverse(ast: AST, state: TraverseState, sourceLocale: string) {
 				);
 
 				if (tImport) {
-					const { start: tImportStart, end: tImportEnd } = tImport as WithPositions<typeof tImport>;
-					const { start: nodeStart, end: nodeEnd } = node;
+					const { start: tImportStart, end: tImportEnd } = /** @type {any} */ (tImport);
+					const { start: nodeStart, end: nodeEnd } = /** @type {any} */ (node);
 
 					state.tImport = {
 						specifier: {
@@ -203,9 +223,9 @@ export function traverse(ast: AST, state: TraverseState, sourceLocale: string) {
 		TaggedTemplateExpression(node, { next, state }) {
 			if (node.tag.type === 'Identifier' && (node.tag.name === 't' || node.tag.name === 'msg')) {
 				const { message, expressions } = normalizeTaggedTemplateExpression(
-					node as TaggedTemplateExpression,
+					/** @type {any} */ (node),
 				);
-				const { start, end } = node;
+				const { start, end } = /** @type {any} */ (node);
 				state.messages.push({
 					context: '',
 					message,
@@ -230,9 +250,9 @@ export function traverse(ast: AST, state: TraverseState, sourceLocale: string) {
 				const context = contextArg.value ? contextArg.value.toString() : '';
 
 				const { message, expressions } = normalizeTaggedTemplateExpression(
-					node as TaggedTemplateExpression,
+					/** @type {any} */ (node),
 				);
-				const { start, end } = node;
+				const { start, end } = /** @type {any} */ (node);
 				state.messages.push({
 					context,
 					message,
@@ -269,7 +289,7 @@ export function traverse(ast: AST, state: TraverseState, sourceLocale: string) {
 				for (const category of pluralCategories) {
 					if (!selectors[category]) {
 						state.error = {
-							start: node.start,
+							start: /** @type {any} */ (node).start,
 							message: `\nsveltext: Missing required plural category '${category}'.\nThe required plural categories are ${pluralCategories.join(', ')}.`,
 						};
 						stop();
@@ -281,7 +301,7 @@ export function traverse(ast: AST, state: TraverseState, sourceLocale: string) {
 					const value = node.arguments[0].value;
 					const category = pr.select(value);
 					const message = selectors[category].replaceAll('#', value);
-					const { start, end } = node;
+					const { start, end } = /** @type {any} */ (node);
 					state.messages.push({
 						context: '',
 						message,
@@ -297,7 +317,7 @@ export function traverse(ast: AST, state: TraverseState, sourceLocale: string) {
 					const message = `{${variable}, plural, ${Object.entries(selectors)
 						.map(([selectorName, selectorValue]) => `${selectorName} {${selectorValue}}`)
 						.join(' ')}}`;
-					const { start, end } = node;
+					const { start, end } = /** @type {any} */ (node);
 					state.messages.push({
 						context: '',
 						message,
@@ -311,7 +331,5 @@ export function traverse(ast: AST, state: TraverseState, sourceLocale: string) {
 
 			next();
 		},
-	};
-
-	walk(ast, state, visitors);
+	});
 }

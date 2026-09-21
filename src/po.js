@@ -6,7 +6,10 @@ import {
 	isArgumentElement,
 } from '@formatjs/icu-messageformat-parser';
 
-export function parseMessage(message: string) {
+/**
+ * @param {string} message
+ */
+export function parseMessage(message) {
 	const result = [];
 	let parsedIcu;
 	try {
@@ -22,7 +25,8 @@ export function parseMessage(message: string) {
 			result.push(element.value);
 		}
 		if (isPluralElement(element)) {
-			const selectors: Record<string, string[]> = {};
+			/** @type {Record<string, string[]>} */
+			const selectors = {};
 			for (const option in element.options) {
 				const selector = element.options[option].value.map((optionElement) => {
 					if (isPoundElement(optionElement)) return '#';
