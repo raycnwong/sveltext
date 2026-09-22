@@ -2,8 +2,9 @@ import MagicString from 'magic-string';
 import { parse } from 'svelte/compiler';
 import { Parser } from 'acorn';
 import type { PluginOption } from 'vite';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import { tsPlugin } from '@sveltejs/acorn-typescript';
-import { po } from 'gettext-parser';
 import {
 	resolveConfig,
 	traverse,
@@ -11,7 +12,8 @@ import {
 	transformTaggedTemplateExpression,
 } from './core.ts';
 import type { TraverseState } from './core.ts';
-import { parseMessage } from './po.ts';
+import { parsePo } from './po.ts';
+import { isNodeError } from './utils.ts';
 
 /**
  * Returns the Vite plugins.
@@ -19,11 +21,33 @@ import { parseMessage } from './po.ts';
 export async function sveltext(): Promise<PluginOption[]> {
 	const TsParser = Parser.extend(tsPlugin());
 	const sveltextConfig = await resolveConfig();
+	let isBuild = false;
+	const catalogs = Object.create(null);
 
 	return [
 		{
 			name: 'vite-plugin-sveltext-transform-ts-js-svelte',
 			enforce: 'pre',
+			async configResolved({ command }) {
+				if (command === 'build') {
+					isBuild = true;
+
+					for (const locale of sveltextConfig.locales) {
+						const poPath = path.join(sveltextConfig.catalog.path, `${locale}.po`);
+						try {
+							const poCode = await fs.readFile(poPath, 'utf-8');
+							catalogs[locale] = parsePo(poCode);
+						} catch (err) {
+							if (isNodeError(err) && err.code === 'ENOENT') {
+								throw new Error(
+									`sveltext: Missing catalog file for locale ${JSON.stringify(locale)}. Expected to find it at ${poPath}.\nPlease ensure a .po file is created for every configured locale.`,
+								);
+							}
+							throw err;
+						}
+					}
+				}
+			},
 			async transform(code, id) {
 				if (
 					(!id.endsWith('.ts') && !id.endsWith('.js') && !id.endsWith('.svelte')) ||
@@ -48,6 +72,20 @@ export async function sveltext(): Promise<PluginOption[]> {
 				const state: TraverseState = { tImport: null, messages: [], error: null };
 
 				traverse(ast, state, sveltextConfig.sourceLocale);
+
+				if (isBuild) {
+					for (const { start, message, context } of state.messages) {
+						const hashedMsgid = generateMessageId(message, context);
+						for (const locale in catalogs) {
+							if (!(hashedMsgid in catalogs[locale])) {
+								this.error(
+									`sveltext: Message ${JSON.stringify(message)}${context ? ` (context: ${JSON.stringify(context)})` : ''} is missing from ${locale}.po.\nPlease run the extraction script before building. This is required even for untranslated strings, as the build process will convert the original messages to hashes.`,
+									start,
+								);
+							}
+						}
+					}
+				}
 
 				if (state.error !== null) {
 					this.error(state.error, state.error.start);
@@ -97,20 +135,8 @@ const t = createSveltextTFunction();`,
 				if (!id.endsWith('.po')) {
 					return;
 				}
-				const parsedPo = po.parse(code);
-				const messages = Object.create(null);
 
-				for (const translations of Object.values(parsedPo.translations)) {
-					for (const key in translations) {
-						if (key === '') continue;
-						const msgid = translations[key]['msgid'];
-						const context = translations[key]['msgctxt'] || '';
-						const hashedMsgid = generateMessageId(msgid, context);
-						const message = (translations[key]['msgstr'][0] || msgid).replace(/\\n/g, '\n');
-						messages[hashedMsgid] = parseMessage(message);
-					}
-				}
-
+				const messages = parsePo(code);
 				const transformedCode = `export const messages = JSON.parse(${JSON.stringify(JSON.stringify(messages))})`;
 
 				return {

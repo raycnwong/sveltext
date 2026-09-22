@@ -1,37 +1,21 @@
-import {
-	parse as icuParse,
-	isPluralElement,
-	isLiteralElement,
-	isPoundElement,
-	isArgumentElement,
-} from '@formatjs/icu-messageformat-parser';
+import { po } from 'gettext-parser';
+import { parseMessage } from './message.ts';
+import { generateMessageId } from './core.ts';
 
-export function parseMessage(message: string) {
-	const result = [];
-	let parsedIcu;
-	try {
-		parsedIcu = icuParse(message);
-	} catch {
-		return [message];
-	}
-	for (const element of parsedIcu) {
-		if (isLiteralElement(element)) {
-			result.push(element.value);
-		}
-		if (isArgumentElement(element)) {
-			result.push(element.value);
-		}
-		if (isPluralElement(element)) {
-			const selectors: Record<string, string[]> = {};
-			for (const option in element.options) {
-				const selector = element.options[option].value.map((optionElement) => {
-					if (isPoundElement(optionElement)) return '#';
-					return optionElement.value;
-				});
-				selectors[option] = selector;
-			}
-			result.push([element.value, 'plural', selectors]);
+export function parsePo(code: string) {
+	const parsedPo = po.parse(code);
+	const messages = Object.create(null);
+
+	for (const translations of Object.values(parsedPo.translations)) {
+		for (const key in translations) {
+			if (key === '') continue;
+			const msgid = translations[key]['msgid'];
+			const context = translations[key]['msgctxt'] || '';
+			const hashedMsgid = generateMessageId(msgid, context);
+			const message = (translations[key]['msgstr'][0] || msgid).replace(/\\n/g, '\n');
+			messages[hashedMsgid] = parseMessage(message);
 		}
 	}
-	return result;
+
+	return messages;
 }

@@ -270,7 +270,7 @@ export function traverse(ast: AST, state: TraverseState, sourceLocale: string) {
 					if (!selectors[category]) {
 						state.error = {
 							start: node.start,
-							message: `\nsveltext: Missing required plural category '${category}'.\nThe required plural categories are ${pluralCategories.join(', ')}.`,
+							message: `sveltext: Missing required plural category '${category}'.\nThe required plural categories are ${pluralCategories.join(', ')}.`,
 						};
 						stop();
 						return;

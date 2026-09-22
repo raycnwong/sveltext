@@ -1,5 +1,5 @@
 import { setContext, getContext } from 'svelte';
-import { parseMessage } from './po.ts';
+import { parseMessage } from './message.ts';
 
 interface SveltextContext {
 	messages: MessageCatalog;
