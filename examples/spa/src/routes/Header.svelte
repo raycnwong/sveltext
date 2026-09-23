@@ -27,6 +27,7 @@
 	{#each ['en', 'ja'] as lang (lang)}
 		{#if lang !== currentLocale}
 			<button
+				data-testid="switch-locale"
 				type="button"
 				onclick={() => {
 					setCurrentLocale(lang);

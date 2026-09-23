@@ -16,10 +16,10 @@
 		"@types/node": "^24",
 		"prettier": "^3.8.1",
 		"prettier-plugin-svelte": "^3.5.0",
-		"svelte": "^5.56.4",
-		"svelte-check": "^4.7.1",
+		"svelte": "^5.51.0",
+		"svelte-check": "^4.3.6",
 		"sveltext": "latest",
-		"typescript": "~6.0.2",
+		"typescript": "^5.9.3",
 		"vite": "^7.3.1"
 	}
 }

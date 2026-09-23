@@ -4,16 +4,16 @@
 	import Footer from './Footer.svelte';
 	import { loadMessageCatalog } from './lib/i18n';
 
-	let currentLocale: 'en' | 'ja' = 'en';
+	let currentLocale: 'en' | 'ja' = $state('en');
 </script>
 
 {#key currentLocale}
 	{#await loadMessageCatalog(currentLocale) then messages}
 		<SveltextRoot locale={currentLocale} {messages}>
 			{#if currentLocale === 'en'}
-				<button onclick={() => (currentLocale = 'ja')}>ja</button>
+				<button data-testid="switch-locale" onclick={() => (currentLocale = 'ja')}>ja</button>
 			{:else}
-				<button onclick={() => (currentLocale = 'en')}>en</button>
+				<button data-testid="switch-locale" onclick={() => (currentLocale = 'en')}>en</button>
 			{/if}
 			<!-- [Sveltext]: ⚠️ Writing t`Test` right here will crash -->
 			<!-- [Sveltext]: ✅ Place translated content inside a separate component -->
