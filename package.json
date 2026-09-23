@@ -58,6 +58,7 @@
 	},
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.build.json && cp ./src/*.svelte ./dist",
+		"test": "pnpm --filter sveltext-tests test",
 		"format": "prettier --write ./src",
 		"typecheck": "tsc --noEmit",
 		"changeset": "changeset",

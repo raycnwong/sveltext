@@ -30,28 +30,34 @@
 <section>
 	<h2>{t`Plural`}</h2>
 
-	<p>{itemLabel}</p>
+	<p data-testid="item-label">{itemLabel}</p>
 
 	<div>
-		<button type="button" onclick={() => (itemCount = Math.max(0, itemCount - 1))}>-</button>
-		<button type="button" onclick={() => itemCount++}>+</button>
+		<button
+			data-testid="decrement"
+			type="button"
+			onclick={() => (itemCount = Math.max(0, itemCount - 1))}
+		>
+			-
+		</button>
+		<button data-testid="increment" type="button" onclick={() => itemCount++}>+</button>
 	</div>
 </section>
 
 <section>
 	<h2>{t`Interpolation and composition`}</h2>
 
-	<p style="white-space: pre-wrap;">
+	<p data-testid="multiline" style="white-space: pre-wrap;">
 		{t`Line 1\nLine 2`}
 	</p>
 
-	<p>{t(greeting)}</p>
+	<p data-testid="greeting">{t(greeting)}</p>
 
-	<p>{t`You have ${itemCount} (${itemLabel}).`}</p>
+	<p data-testid="count-summary">{t`You have ${itemCount} (${itemLabel}).`}</p>
 
-	<p>{t`Interpolated context message: ${c('badge').t`New`}`}</p>
+	<p data-testid="context-message">{t`Interpolated context message: ${c('badge').t`New`}`}</p>
 
-	<p>{summary}</p>
+	<p data-testid="summary">{summary}</p>
 </section>
 
 <section>
@@ -59,13 +65,13 @@
 
 	<T msg={msg`Toolbar: {refresh} {refreshFail}`}>
 		{#snippet refresh()}
-			<button type="button" onclick={() => goRefresh(true)}>
+			<button data-testid="refresh" type="button" onclick={() => goRefresh(true)}>
 				{t`Refresh`}
 			</button>
 		{/snippet}
 
 		{#snippet refreshFail()}
-			<button type="button" onclick={() => goRefresh(false)}>
+			<button data-testid="refresh-fail" type="button" onclick={() => goRefresh(false)}>
 				{t`Refresh (fail)`}
 			</button>
 		{/snippet}
@@ -83,6 +89,6 @@
 			alert('The translated email has been logged in the server console.');
 		}}
 	>
-		<button type="submit">{t`Send Email`}</button>
+		<button data-testid="send-email" type="submit">{t`Send Email`}</button>
 	</form>
 </section>

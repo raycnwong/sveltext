@@ -27,7 +27,7 @@
 		{#if locale !== currentLocale}
 			<form method="POST" action="/?/setLocale" use:enhance>
 				<input type="hidden" name="locale" value={locale} />
-				<button type="submit">
+				<button data-testid="switch-locale" type="submit">
 					{locale}
 				</button>
 			</form>
