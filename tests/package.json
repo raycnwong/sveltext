@@ -3,10 +3,12 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"test": "playwright test"
+		"e2e": "playwright test",
+		"build": "node --test build/*.test.mjs"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.55.0",
+		"sveltext": "latest",
 		"typescript": "^5.9.3"
 	}
 }
