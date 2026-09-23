@@ -11,8 +11,8 @@ A compiled, Svelte-first i18n library with Gettext-like syntax and ICU plurals.
 
 ## 🚀 Try it out
 
-| Example                                                                     | Online IDE                                                                                                                                                                                                                                                                                                                   |
-| --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Example                                                                   | Online IDE                                                                                                                                                                                                                                                                                                               |
+| ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | [SSR](https://github.com/raycnwong/sveltext/tree/main/examples/ssr)       | [![Open in SvelteLab](https://docs.sveltelab.dev/button/dark_short.svg)](https://sveltelab.dev/github.com/raycnwong/sveltext/tree/main/examples/ssr) [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/raycnwong/sveltext/tree/main/examples/ssr)       |
 | [SPA](https://github.com/raycnwong/sveltext/tree/main/examples/spa)       | [![Open in SvelteLab](https://docs.sveltelab.dev/button/dark_short.svg)](https://sveltelab.dev/github.com/raycnwong/sveltext/tree/main/examples/spa) [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/raycnwong/sveltext/tree/main/examples/spa)       |
 | [Svelte](https://github.com/raycnwong/sveltext/tree/main/examples/svelte) | [![Open in SvelteLab](https://docs.sveltelab.dev/button/dark_short.svg)](https://sveltelab.dev/github.com/raycnwong/sveltext/tree/main/examples/svelte) [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/raycnwong/sveltext/tree/main/examples/svelte) |
@@ -23,9 +23,24 @@ Please follow the [Setup Guide](https://github.com/raycnwong/sveltext/blob/main/
 
 ## 📖 Usage
 
-Import the `t` tag and write your text naturally.
-
 ### Basic Translation & Interpolation
+
+In a standalone Svelte app, `App.svelte` loads the catalog and renders a child inside `SveltextRoot`:
+
+```svelte
+<script lang="ts">
+	import { SveltextRoot } from 'sveltext';
+	import Greeting from './Greeting.svelte';
+</script>
+
+{#await import('./locales/en.po') then catalog}
+	<SveltextRoot locale="en" messages={catalog.messages}>
+		<Greeting />
+	</SveltextRoot>
+{/await}
+```
+
+Put calls to `t` in `Greeting.svelte`, which renders beneath the root. In SvelteKit, put `SveltextRoot` in [`+layout.svelte`](https://github.com/raycnwong/sveltext/blob/main/examples/ssr/src/routes/+layout.svelte) and use this child code in `+page.svelte` instead:
 
 ```svelte
 <script lang="ts">
