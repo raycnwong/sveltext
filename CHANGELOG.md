@@ -1,5 +1,11 @@
 # sveltext
 
+## 0.2.0
+
+### Minor Changes
+
+- [#17](https://github.com/raycnwong/sveltext/pull/17) [`a0de30c`](https://github.com/raycnwong/sveltext/commit/a0de30c86c1636105970c47422147c3f1599cf8a) Thanks [@raycnwong](https://github.com/raycnwong)! - enhance: add msgid check to build step
+
 ## 0.1.2
 
 ### Patch Changes
