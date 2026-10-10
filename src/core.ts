@@ -2,6 +2,7 @@ import { walk, type Visitors } from 'zimmerframe';
 import type { default as MagicString } from 'magic-string';
 import type { Expression, Program, TaggedTemplateExpression } from 'acorn';
 import type { AST as SvelteAST } from 'svelte/compiler';
+import { parse as icuParse, isArgumentElement } from '@formatjs/icu-messageformat-parser';
 import crypto from 'crypto';
 import path from 'node:path';
 
@@ -172,6 +173,72 @@ export function transformTaggedTemplateExpression(
 
 export function traverse(ast: AST, state: TraverseState, sourceLocale: string) {
 	const visitors: Visitors<AST, TraverseState> = {
+		Component(node, { next, stop }) {
+			if (node.name !== 'T') {
+				next();
+				return;
+			}
+
+			const snippets = new Map<string, number>();
+			for (const child of node.fragment.nodes) {
+				if (child.type === 'SnippetBlock') {
+					snippets.set(child.expression.name, child.start);
+				} else if (child.type !== 'Comment' && !(child.type === 'Text' && !child.data.trim())) {
+					state.error = {
+						start: child.start,
+						message: 'sveltext: Unnamed content inside <T>; declare a named snippet.',
+					};
+					stop();
+					return;
+				}
+			}
+			for (const attribute of node.attributes) {
+				if (attribute.type === 'Attribute' && attribute.name !== 'msg') {
+					snippets.set(attribute.name, attribute.start);
+				}
+			}
+
+			next();
+			if (state.error) return;
+
+			const attribute = node.attributes.find(
+				(attribute) => attribute.type === 'Attribute' && attribute.name === 'msg',
+			);
+			if (!attribute || attribute.type !== 'Attribute' || attribute.value === true) return;
+			const value = Array.isArray(attribute.value) ? attribute.value[0] : attribute.value;
+			if (value?.type !== 'ExpressionTag') return;
+			const message = state.messages.find(
+				(message) =>
+					message.tagName === 'msg' &&
+					message.start === (value.expression as WithPositions<Expression>).start,
+			);
+			if (!message || message.tagName !== 'msg') return;
+
+			let elements: ReturnType<typeof icuParse>;
+			try {
+				elements = icuParse(message.message);
+			} catch {
+				return;
+			}
+			const placeholders = new Set(
+				elements.filter(isArgumentElement).map((element) => element.value),
+			);
+			const args = new Set(message.expressions.map(inferVariableName).map(String));
+			for (const name of placeholders) {
+				if (!snippets.has(name) && !args.has(name)) {
+					state.error = { start: message.start, message: `sveltext: Missing snippet '${name}'.` };
+					stop();
+					return;
+				}
+			}
+			for (const [name, start] of snippets) {
+				if (!placeholders.has(name)) {
+					state.error = { start, message: `sveltext: Unexpected snippet '${name}'.` };
+					stop();
+					return;
+				}
+			}
+		},
 		ImportDeclaration(node, { next, state }) {
 			if (node.source.value === 'sveltext') {
 				const tImport = node.specifiers.find(

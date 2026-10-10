@@ -1,0 +1,25 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+
+msgid "Toolbar: {refresh} {refreshFail}"
+msgstr ""
+
+msgid "Toolbar: {refresh}"
+msgstr ""
+
+msgid "Hello {name}: {refresh}"
+msgstr ""
+
+msgctxt "toolbar"
+msgid "Toolbar: {refresh}"
+msgstr ""
+
+msgid "Hello {name} {1}"
+msgstr ""
+
+msgid "Toolbar: {refresh} {refresh}"
+msgstr ""
+
+msgid "Toolbar: '{refresh}'"
+msgstr ""
