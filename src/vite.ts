@@ -73,6 +73,10 @@ export async function sveltext(): Promise<PluginOption[]> {
 
 				traverse(ast, state, sveltextConfig.sourceLocale);
 
+				if (state.error !== null) {
+					this.error(state.error, state.error.start);
+				}
+
 				if (isBuild) {
 					for (const { start, message, context } of state.messages) {
 						const hashedMsgid = generateMessageId(message, context);
@@ -85,10 +89,6 @@ export async function sveltext(): Promise<PluginOption[]> {
 							}
 						}
 					}
-				}
-
-				if (state.error !== null) {
-					this.error(state.error, state.error.start);
 				}
 
 				if (id.endsWith('.svelte')) {
