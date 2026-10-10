@@ -1,7 +1,7 @@
 import MagicString from 'magic-string';
 import { parse } from 'svelte/compiler';
 import { Parser } from 'acorn';
-import type { PluginOption } from 'vite';
+import type { PluginOption, ViteDevServer } from 'vite';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { tsPlugin } from '@sveltejs/acorn-typescript';
@@ -23,11 +23,16 @@ export async function sveltext(): Promise<PluginOption[]> {
 	const sveltextConfig = await resolveConfig();
 	let isBuild = false;
 	const catalogs = Object.create(null);
+	const failedModules = new Set<string>();
+	let devServer: ViteDevServer | undefined;
 
 	return [
 		{
 			name: 'vite-plugin-sveltext-transform-ts-js-svelte',
 			enforce: 'pre',
+			configureServer(server) {
+				devServer = server;
+			},
 			async configResolved({ command }) {
 				if (command === 'build') {
 					isBuild = true;
@@ -74,6 +79,9 @@ export async function sveltext(): Promise<PluginOption[]> {
 				traverse(ast, state, sveltextConfig.sourceLocale);
 
 				if (state.error !== null) {
+					if (devServer) {
+						failedModules.add(id);
+					}
 					this.error(state.error, state.error.start);
 				}
 
@@ -145,6 +153,19 @@ const t = createSveltextTFunction();`,
 						mappings: '',
 					},
 				};
+			},
+		},
+		{
+			name: 'vite-plugin-sveltext-validation-recovery',
+			apply: 'serve',
+			enforce: 'post',
+			transform: {
+				order: 'post',
+				handler(_code, id) {
+					if (devServer && failedModules.delete(id)) {
+						devServer.ws.send({ type: 'full-reload' });
+					}
+				},
 			},
 		},
 	];
