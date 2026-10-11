@@ -1,14 +1,12 @@
-import { _, type MessageDescriptor, type MessageCatalog } from './runtime.ts';
-export type { MessageCatalog, MessageDescriptor };
+import { _, translate, type MessageDescriptor } from './runtime.ts';
+export type { MessageCatalog, MessageDescriptor, SveltextContext } from './runtime.ts';
 export { _ };
 export { default as T } from './T.svelte';
 export { default as SveltextRoot } from './SveltextRoot.svelte';
 export function t(descriptor: TemplateStringsArray, ...args: (string | number)[]): string;
 export function t(descriptor: MessageDescriptor): string;
 export function t(...args: any[]): string {
-	throw new Error(
-		'sveltext: `t()` can only be used inside a Svelte component.\n\nUse `msg` for lazy translation, or `_` for server-side usage.',
-	);
+	return translate(args[0]);
 }
 export function msg(
 	descriptor: TemplateStringsArray,

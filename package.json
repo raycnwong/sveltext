@@ -32,9 +32,9 @@
 			"types": "./src/vite.ts",
 			"default": "./src/vite.ts"
 		},
-		"./internal": {
-			"types": "./src/internal.ts",
-			"default": "./src/internal.ts"
+		"./server": {
+			"types": "./src/server.ts",
+			"default": "./src/server.ts"
 		}
 	},
 	"publishConfig": {
@@ -50,9 +50,9 @@
 				"types": "./dist/vite.d.ts",
 				"default": "./dist/vite.js"
 			},
-			"./internal": {
-				"types": "./dist/internal.d.ts",
-				"default": "./dist/internal.js"
+			"./server": {
+				"types": "./dist/server.d.ts",
+				"default": "./dist/server.js"
 			}
 		}
 	},

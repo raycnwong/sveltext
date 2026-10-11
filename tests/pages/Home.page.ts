@@ -7,6 +7,7 @@ export class HomePage {
 	readonly contextMessage: Locator;
 	readonly summary: Locator;
 	readonly multiline: Locator;
+	readonly tsStatus: Locator;
 	readonly switchLocaleButton: Locator;
 	readonly refreshButton: Locator;
 	readonly refreshFailButton: Locator;
@@ -21,6 +22,7 @@ export class HomePage {
 		this.contextMessage = page.getByTestId('context-message');
 		this.summary = page.getByTestId('summary');
 		this.multiline = page.getByTestId('multiline');
+		this.tsStatus = page.getByTestId('ts-status');
 		this.switchLocaleButton = page.getByTestId('switch-locale');
 		this.refreshButton = page.getByTestId('refresh');
 		this.refreshFailButton = page.getByTestId('refresh-fail');

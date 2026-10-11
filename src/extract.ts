@@ -38,7 +38,7 @@ export async function runExtract() {
 	)) {
 		const code = (await fs.readFile(entry)).toString('utf-8');
 		if (code.includes('sveltext')) {
-			let _state: TraverseState = { messages: [], error: null, tImport: null };
+			let _state: TraverseState = { messages: [], error: null };
 			let ast;
 
 			if (entry.endsWith('.svelte')) {

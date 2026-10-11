@@ -1,0 +1,20 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Language: en\n"
+
+msgid "Active"
+msgstr ""
+
+msgid "Required"
+msgstr ""
+
+msgid "Hello {name}!"
+msgstr ""
+
+msgctxt "badge"
+msgid "New"
+msgstr ""
+
+msgid "{count, plural, one {# item} other {# items}}"
+msgstr ""

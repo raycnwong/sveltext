@@ -31,18 +31,12 @@ interface ExtractedPluralMessage extends ExtractedMessageBase {
 
 type ExtractedMessage = ExtractedRegularMessage | ExtractedPluralMessage;
 
-interface TImport {
-	specifier: { start: number; end: number; count: number };
-	declaration: { start: number; end: number };
-}
-
 interface TraverseStateError {
 	start: number;
 	message: string;
 }
 
 export interface TraverseState {
-	tImport: TImport | null;
 	messages: ExtractedMessage[];
 	error: TraverseStateError | null;
 }
@@ -125,13 +119,14 @@ function normalizeTaggedTemplateExpression(node: TaggedTemplateExpression) {
 export function transformTaggedTemplateExpression(
 	s: MagicString,
 	{ start, end, message, tagName, context, expressions }: ExtractedMessage,
+	translator: string,
 ) {
 	const id = generateMessageId(message, context);
 	const idLiteral = JSON.stringify(id);
 
 	if (tagName === 'plural') {
 		const variable = expressions.length === 0 ? '' : `, args: ${expressions[0]}`;
-		s.overwrite(start, end, `t({ id: ${idLiteral}${variable} })`);
+		s.overwrite(start, end, `${translator}({ id: ${idLiteral}${variable} })`);
 		return;
 	}
 
@@ -141,7 +136,7 @@ export function transformTaggedTemplateExpression(
 		if (tagName === 'msg') {
 			replacement = `{ id: ${idLiteral} }`;
 		} else {
-			replacement = `t({ id: ${idLiteral} })`;
+			replacement = `${translator}({ id: ${idLiteral} })`;
 		}
 
 		s.overwrite(start, end, replacement);
@@ -152,7 +147,7 @@ export function transformTaggedTemplateExpression(
 		if (tagName === 'msg') {
 			prefix = `{ id: ${idLiteral}, args: { `;
 		} else {
-			prefix = `t({ id: ${idLiteral}, args: { `;
+			prefix = `${translator}({ id: ${idLiteral}, args: { `;
 		}
 
 		for (let i = 0; i < expressions.length; i++) {
@@ -238,34 +233,6 @@ export function traverse(ast: AST, state: TraverseState, sourceLocale: string) {
 					return;
 				}
 			}
-		},
-		ImportDeclaration(node, { next, state }) {
-			if (node.source.value === 'sveltext') {
-				const tImport = node.specifiers.find(
-					(specifier) =>
-						specifier.type === 'ImportSpecifier' &&
-						specifier.imported.type === 'Identifier' &&
-						specifier.imported.name === 't',
-				);
-
-				if (tImport) {
-					const { start: tImportStart, end: tImportEnd } = tImport as WithPositions<typeof tImport>;
-					const { start: nodeStart, end: nodeEnd } = node;
-
-					state.tImport = {
-						specifier: {
-							start: tImportStart,
-							end: tImportEnd,
-							count: node.specifiers.length,
-						},
-						declaration: {
-							start: nodeStart,
-							end: nodeEnd,
-						},
-					};
-				}
-			}
-			next();
 		},
 		TaggedTemplateExpression(node, { next, state }) {
 			if (node.tag.type === 'Identifier' && (node.tag.name === 't' || node.tag.name === 'msg')) {

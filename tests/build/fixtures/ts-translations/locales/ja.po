@@ -1,0 +1,20 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Language: ja\n"
+
+msgid "Active"
+msgstr "有効"
+
+msgid "Required"
+msgstr "必須"
+
+msgid "Hello {name}!"
+msgstr "こんにちは、{name}さん！"
+
+msgctxt "badge"
+msgid "New"
+msgstr "新着"
+
+msgid "{count, plural, one {# item} other {# items}}"
+msgstr "{count, plural, other {#個のアイテム}}"

@@ -1,6 +1,5 @@
-import { msg, _ } from 'sveltext';
+import { t } from 'sveltext';
 import type { Actions } from './$types';
-import { loadMessageCatalog } from '$lib/i18n';
 
 export const actions = {
 	setLocale: async (event) => {
@@ -14,11 +13,11 @@ export const actions = {
 		const {
 			locals: { currentLocale }
 		} = event;
-		const messages = await loadMessageCatalog(currentLocale);
-		const sveltextContext = { locale: currentLocale, messages };
+		// The server hook keeps the translation context active across async work.
+		await Promise.resolve();
 		const name = 'John';
-		const title = _(msg`Test Email to ${name}`, sveltextContext);
-		const body = _(msg`Hello ${name} from SvelteKit form actions!`, sveltextContext);
+		const title = t`Test Email to ${name}`;
+		const body = t`Hello ${name} from SvelteKit form actions!`;
 		console.log(
 			`Sending email to the user with ${currentLocale}:\n\nTitle: ${title}\nBody: ${body}`
 		);

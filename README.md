@@ -51,13 +51,51 @@ Put calls to `t` in `Greeting.svelte`, which renders beneath the root. In Svelte
 <h1>{t`Welcome back, ${name}!`}</h1>
 ```
 
-### Lazy Translations (Outside Components)
+### Translation in TypeScript Helpers and Schemas
 
-Sometimes you need to define translated text outside of Svelte's render cycle, such as in Zod schemas, navigation arrays, or constant files.
+Import `t` directly in `.ts` and `.js` files, and call it inside formatters or validation callbacks:
 
-The `t` function is **not supported outside of a Svelte component**. Message catalogs are loaded inside the Svelte context to prevent [cross-request state pollution in SSR](https://svelte.dev/docs/kit/state-management#Avoid-shared-state-on-the-server), which means the active catalog is only available within the component tree. Outside of it, no catalog is accessible.
+```ts
+import { t } from 'sveltext';
+import { z } from 'zod';
 
-Instead, use the `msg` tag. It marks the string for the CLI extractor and compiles it to a hash, while **deferring** the actual dictionary lookup until render time inside a component.
+export function formatStatus(status: 'active' | 'pending') {
+	return status === 'active' ? t`Active` : t`Pending`;
+}
+
+export const schema = z.string().superRefine((value, ctx) => {
+	if (!value.trim()) {
+		ctx.addIssue({ code: 'custom', message: t`Required` });
+	}
+});
+```
+
+Components, `<T>`, and TypeScript helpers all use the same translation context. In the browser, `SveltextRoot` initializes the app-wide catalog. Calls use the most recently initialized root's locale, including calls from other roots; nested roots do not provide separate locales. This setup assumes one active app-wide locale. When switching locales, recreate the root with `{#key currentLocale}`, as in the examples. Future calls translate using the new catalog; existing strings and validation errors need to be recomputed.
+
+For SSR, initialize a translation scope once per request. This scope is required for component rendering as well as server helpers; `SveltextRoot` only initializes the browser catalog. In SvelteKit:
+
+```ts
+// src/hooks.server.ts
+import type { Handle } from '@sveltejs/kit';
+import { withSveltext } from 'sveltext/server';
+import { loadMessageCatalog, matchLocale } from '$lib/i18n';
+
+export const handle: Handle = async ({ event, resolve }) => {
+	const locale = matchLocale(
+		event.cookies.get('currentLocale') ?? event.request.headers.get('accept-language'),
+	);
+	const messages = await loadMessageCatalog(locale);
+	return withSveltext({ locale, messages }, () => resolve(event));
+};
+```
+
+Server helpers, load functions, actions, rendering, and asynchronous callbacks invoked inside this scope can import `t` directly. Each scope has its own locale/catalog, including across `await`. The server entry requires a runtime supporting `node:async_hooks` and `AsyncLocalStorage`; keep its import in server-only files. Background work can also use `withSveltext(context, callback)`, or the explicit `_` function below.
+
+Calling imported `t` before browser initialization or outside a server translation scope throws an error. Avoid eagerly translated module-level constants such as `export const label = t\`Active\``: modules load before a user's locale is available, and those strings would not update when the locale changes. Shared schemas are fine when translation occurs inside their validation callbacks.
+
+### Lazy Translations (Module-Level Constants)
+
+Use `msg` for navigation arrays, constants, and other messages that should be translated later. It marks the string for extraction and compiles it to a descriptor, while deferring the dictionary lookup until `t` or `_` is called.
 
 ```ts
 // src/lib/helpers.ts
@@ -85,7 +123,7 @@ export const errors = {
 </script>
 ```
 
-If you truly need translation on the server outside the component tree, use the pure runtime function `_` and manually provide the message catalog (see the server code usage introduction).
+For translation with an explicit catalog, use the pure runtime function `_` (see [Using the pure runtime function `_` on the server](#using-the-pure-runtime-function-_-on-the-server)).
 
 ### Plurals
 
@@ -154,30 +192,28 @@ _Because `sveltext` is Svelte 5 native, your interpolated snippets can contain f
 
 ### Using the pure runtime function `_` on the server
 
-To use Sveltext while remaining safe from cross-request state pollution, use the pure runtime function `_` and manually load and pass the message catalog when performing server-side actions.
+Use `_` when you want to choose the locale and message catalog for an individual translation. It accepts a message descriptor from `msg` and an explicit `{ locale, messages }` context. This is useful for background jobs or emails whose recipient's locale differs from the current request.
+
+Server code inside a `withSveltext` scope can use `t` directly, with each request's context isolated across asynchronous work. Use `_` when passing the translation context explicitly suits your code.
+
+For example, format a welcome email using the recipient's locale:
 
 ```ts
+// src/lib/email.ts
 import { msg, _ } from 'sveltext';
 import type { MessageCatalog } from 'sveltext';
-import type { Actions } from './$types';
 
 const catalogLoaders = import.meta.glob<MessageCatalog>('../locales/*.po', { import: 'messages' });
 
-export const actions = {
-	sendEmail: async (event) => {
-		const {
-			locals: { currentLocale },
-		} = event;
-		const messages = await catalogLoaders[`../locales/${currentLocale}.po`]();
-		const sveltextContext = { locale: currentLocale, messages };
-		const name = 'John';
-		const title = _(msg`Test Email to ${name}`, sveltextContext);
-		const body = _(msg`Hello ${name} from SvelteKit form actions!`, sveltextContext);
-		console.log(
-			`Sending email to the user with ${currentLocale}:\n\nTitle: ${title}\nBody: ${body}`,
-		);
-	},
-} satisfies Actions;
+export async function createWelcomeEmail(name: string, locale: string) {
+	const messages = await catalogLoaders[`../locales/${locale}.po`]();
+	const context = { locale, messages };
+
+	return {
+		subject: _(msg`Welcome, ${name}!`, context),
+		body: _(msg`Hello ${name}, thanks for joining us!`, context),
+	};
+}
 ```
 
 ## 🛠️ The CLI Extractor

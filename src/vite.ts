@@ -1,6 +1,6 @@
 import MagicString from 'magic-string';
 import { parse } from 'svelte/compiler';
-import { Parser } from 'acorn';
+import { Parser, type Program } from 'acorn';
 import type { PluginOption, ViteDevServer } from 'vite';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -11,7 +11,7 @@ import {
 	generateMessageId,
 	transformTaggedTemplateExpression,
 } from './core.ts';
-import type { TraverseState } from './core.ts';
+import type { TraverseState, WithPositions } from './core.ts';
 import { parsePo } from './po.ts';
 import { isNodeError } from './utils.ts';
 
@@ -64,8 +64,12 @@ export async function sveltext(): Promise<PluginOption[]> {
 				const s = new MagicString(code);
 
 				let ast;
+				let importPosition: number | undefined = 0;
 				if (id.endsWith('.svelte')) {
 					ast = parse(code, { modern: true });
+					importPosition = ast.module
+						? (ast.module.content as WithPositions<Program>).start
+						: undefined;
 				} else {
 					ast = TsParser.parse(code, {
 						sourceType: 'module',
@@ -74,7 +78,7 @@ export async function sveltext(): Promise<PluginOption[]> {
 					});
 				}
 
-				const state: TraverseState = { tImport: null, messages: [], error: null };
+				const state: TraverseState = { messages: [], error: null };
 
 				traverse(ast, state, sveltextConfig.sourceLocale);
 
@@ -99,31 +103,19 @@ export async function sveltext(): Promise<PluginOption[]> {
 					}
 				}
 
-				if (id.endsWith('.svelte')) {
-					if (state.tImport) {
-						const { specifier, declaration } = state.tImport;
-						if (specifier.count === 1) {
-							s.remove(declaration.start, declaration.end);
-						} else {
-							s.remove(specifier.start, specifier.end + 1);
-						}
-					}
-
-					if (
-						state.tImport ||
-						state.messages.filter(({ tagName }) => tagName !== 'msg').length > 0
-					) {
-						s.appendRight(
-							// FIXME: Remove `any` type cast
-							(ast as any).instance.content.start,
-							`import { createSveltextTFunction } from 'sveltext/internal';
-const t = createSveltextTFunction();`,
-						);
+				let translator = '__sveltext_t';
+				while (code.includes(translator)) translator += '_';
+				if (state.messages.some(({ tagName }) => tagName !== 'msg')) {
+					const runtimeImport = `import { t as ${translator} } from 'sveltext';\n`;
+					if (importPosition === undefined) {
+						s.prepend(`<script module>${runtimeImport}</script>\n`);
+					} else {
+						s.appendRight(importPosition, runtimeImport);
 					}
 				}
 
 				for (const message of state.messages) {
-					transformTaggedTemplateExpression(s, message);
+					transformTaggedTemplateExpression(s, message, translator);
 				}
 
 				return {

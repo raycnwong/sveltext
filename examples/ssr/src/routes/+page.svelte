@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { c, msg, plural, T, t } from 'sveltext';
-	import { errors } from '$lib/helpers';
+	import { formatStatus, validateItems } from '$lib/helpers';
 	import { enhance } from '$app/forms';
 
 	let name = 'John Doe';
@@ -16,14 +16,14 @@
 
 	const summary = $derived(t`Hello ${name}. You have ${itemLabel}.`);
 
-	function goRefresh(success = true) {
+	async function goRefresh(success = true) {
 		if (success) {
 			itemCount = 1;
-			alert(t`Refreshed`);
+			alert(formatStatus('ready'));
 			return;
 		}
 
-		alert(t(errors.sync));
+		alert(await validateItems(false));
 	}
 </script>
 
@@ -58,6 +58,7 @@
 	<p data-testid="context-message">{t`Interpolated context message: ${c('badge').t`New`}`}</p>
 
 	<p data-testid="summary">{summary}</p>
+	<p data-testid="ts-status">{formatStatus('ready')}</p>
 </section>
 
 <section>

@@ -1,7 +1,6 @@
-import { setContext, getContext } from 'svelte';
 import { parseMessage } from './message.ts';
 
-interface SveltextContext {
+export interface SveltextContext {
 	messages: MessageCatalog;
 	locale: string;
 }
@@ -9,6 +8,27 @@ interface SveltextContext {
 export type MessageCatalog = Record<string, unknown[]>;
 
 export type MessageDescriptor = { id: string; args?: Record<string, unknown> };
+
+let browserContext: SveltextContext | undefined;
+let resolveServerContext: (() => SveltextContext | undefined) | undefined;
+
+export function setServerContextResolver(resolve: () => SveltextContext | undefined) {
+	resolveServerContext = resolve;
+}
+
+export function getTranslationContext(): SveltextContext {
+	const context = typeof window !== 'undefined' ? browserContext : resolveServerContext?.();
+	if (!context) {
+		throw new Error(
+			'sveltext: No translation context for `t()`. Render SveltextRoot in the browser, or wrap server work with withSveltext() from sveltext/server. Use `msg` for module-level constants.',
+		);
+	}
+	return context;
+}
+
+export function translate(messageDescriptor: MessageDescriptor) {
+	return _(messageDescriptor, getTranslationContext());
+}
 
 export function getMessage(id: string, messages: MessageCatalog) {
 	let message = messages[id];
@@ -50,23 +70,6 @@ export function _({ id, args }: MessageDescriptor, { messages, locale }: Sveltex
 	return tokens.join('');
 }
 
-export function createSveltextTFunction() {
-	const context = getSveltextContext();
-
-	return function t(messageDescriptor: MessageDescriptor) {
-		return _(messageDescriptor, context);
-	};
-}
-
-const contextId = Symbol('sveltext');
-
-export function getSveltextContext(): SveltextContext {
-	return getContext(contextId);
-}
-
-export function setLocale(locale: string, messages: MessageCatalog) {
-	setContext(contextId, {
-		locale,
-		messages,
-	});
+export function setBrowserContext(context: SveltextContext) {
+	browserContext = context;
 }
