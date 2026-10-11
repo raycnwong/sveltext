@@ -11,6 +11,7 @@ test('renders English translations and interpolated content', async ({ page }) =
 	await expect(home.contextMessage).toHaveText('Interpolated context message: New');
 	await expect(home.summary).toHaveText('Hello John Doe. You have 1 item.');
 	await expect(home.multiline).toHaveText('Line 1\nLine 2');
+	await expect(home.tsStatus).toHaveText('Refreshed');
 });
 
 test('updates plurals and composed messages, with a zero floor', async ({ page }) => {
@@ -42,6 +43,7 @@ test('switches translations to Japanese and back', async ({ page }) => {
 	await expect(home.contextMessage).toHaveText('補間されたコンテキストメッセージ: 新着');
 	await expect(home.summary).toHaveText('こんにちは、John Doeさん。1個のアイテム あります。');
 	await expect(home.multiline).toHaveText('1行目\n2行目');
+	await expect(home.tsStatus).toHaveText('更新しました');
 
 	await home.increment();
 	await expect(home.itemLabel).toHaveText('2個のアイテム');
@@ -51,6 +53,40 @@ test('switches translations to Japanese and back', async ({ page }) => {
 	await home.switchLocale();
 	await expect(home.greeting).toHaveText('Hello John Doe!');
 	await expect(home.itemLabel).toHaveText('1 item');
+	await expect(home.tsStatus).toHaveText('Refreshed');
+});
+
+test('SSR TypeScript helpers isolate simultaneous requests in different locales', async ({
+	browser,
+	baseURL,
+}) => {
+	test.skip(test.info().project.name !== 'ssr', 'Requires server rendering');
+	const contexts = await Promise.all(
+		['en', 'ja'].map((locale) =>
+			browser.newContext({
+				baseURL,
+				javaScriptEnabled: false,
+				locale,
+			}),
+		),
+	);
+	try {
+		const homes = await Promise.all(
+			contexts.map(async (context) => new HomePage(await context.newPage())),
+		);
+		await Promise.all(homes.map((home) => home.goto()));
+		await expect(homes[0].greeting).toHaveText('Hello John Doe!');
+		await expect(homes[1].greeting).toHaveText('こんにちは、John Doeさん！');
+		await expect(homes[0].tsStatus).toHaveText('Refreshed');
+		await expect(homes[1].tsStatus).toHaveText('更新しました');
+		await expect(homes[0].refreshButton).toHaveText('Refresh');
+		await expect(homes[1].refreshButton).toHaveText('更新');
+		await Promise.all(homes.map((home) => home.goto()));
+		await expect(homes[0].tsStatus).toHaveText('Refreshed');
+		await expect(homes[1].tsStatus).toHaveText('更新しました');
+	} finally {
+		await Promise.all(contexts.map((context) => context.close()));
+	}
 });
 
 test('refresh shows a translated alert and resets the count', async ({ page }) => {
@@ -80,8 +116,8 @@ test('failed refresh reports the localized error without changing the count', as
 	await expect(home.itemLabel).toHaveText('2 items');
 
 	await home.switchLocale();
-	await home.increment();
 	await expect(home.refreshFailButton).toHaveText('更新（失敗）');
+	await home.increment();
 	expect(await home.refreshFail()).toBe('アイテムの同期中にエラーが発生しました');
 	await expect(home.itemLabel).toHaveText('2個のアイテム');
 });

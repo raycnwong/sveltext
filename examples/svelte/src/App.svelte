@@ -15,8 +15,6 @@
 			{:else}
 				<button data-testid="switch-locale" onclick={() => (currentLocale = 'en')}>en</button>
 			{/if}
-			<!-- [Sveltext]: ⚠️ Writing t`Test` right here will crash -->
-			<!-- [Sveltext]: ✅ Place translated content inside a separate component -->
 			<Page />
 			<Footer />
 		</SveltextRoot>

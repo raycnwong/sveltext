@@ -77,10 +77,14 @@ export {};
 
 **3.2** Detect locale in `hooks.server.ts`
 
-Create or modify `hooks.server.ts` to determine the locale when a request starts processing:
+Create or modify `hooks.server.ts` to determine the locale and initialize a translation scope for each request. This lets TypeScript helpers, server load functions, and actions import `t` directly, including after `await`. The server setup requires a runtime supporting `node:async_hooks` and `AsyncLocalStorage`.
 
 ```ts
 import type { Handle } from '@sveltejs/kit';
+import type { MessageCatalog } from 'sveltext';
+import { withSveltext } from 'sveltext/server';
+
+const catalogLoaders = import.meta.glob<MessageCatalog>('./locales/*.po', { import: 'messages' });
 
 function inferPreferredLocale(acceptLanguageHeader: string | null) {
 	if (acceptLanguageHeader) {
@@ -110,11 +114,12 @@ export const handle: Handle = async ({ event, resolve }) => {
 		secure: false,
 	});
 
-	const response = await resolve(event, {
-		transformPageChunk: ({ html }) => html.replace('%lang%', currentLocale),
-	});
-
-	return response;
+	const messages = await catalogLoaders[`./locales/${currentLocale}.po`]();
+	return withSveltext({ locale: currentLocale, messages }, () =>
+		resolve(event, {
+			transformPageChunk: ({ html }) => html.replace('%lang%', currentLocale),
+		}),
+	);
 };
 ```
 
@@ -238,21 +243,20 @@ Sveltext uses the `SveltextRoot` component inside Svelte's native `{#key}` block
 
 **src/routes/+layout.svelte**
 
-⚠️ Translation functions are **not available directly inside this file**. Because the layout is responsible for bootstrapping the locale and catalog, translations cannot be evaluated at this level.
+Components, `<T>`, and TypeScript helpers share one translation context: the browser catalog initialized by `SveltextRoot`, or the server translation scope established in the hook above. SSR rendering requires `withSveltext()`; the root does not initialize server state. Nested browser roots use the most recently initialized catalog rather than separate locales.
 
-If you need translated content in layout-level UI (such as headers or footers), create a separate component and render it inside `<SveltextRoot>`. Translations should always live within the initialized Sveltext component tree.
+Evaluate translations after initialization. Calls in the layout's `<script>` run before its `SveltextRoot` initializes the browser catalog, so keep initial translated values in child components or evaluate `t` in the root's children, as shown below. See [Translation in TypeScript Helpers and Schemas](../README.md#translation-in-typescript-helpers-and-schemas).
 
 ```svelte
 <script lang="ts">
-	import { SveltextRoot } from 'sveltext';
+	import { SveltextRoot, t } from 'sveltext';
     let { data, children } = $props();
 </script>
 
 {#key data.currentLocale}
 	<SveltextRoot locale={data.currentLocale} messages={data.messages}>
-        {/* ⚠️ Writing t`Test` right here will crash */}
+        <h1>{t`Welcome`}</h1>
         {@render children()}
-        {/* ✅ Place translated content inside a separate component */}
         <Footer />
 	</SveltextRoot>
 {/key}

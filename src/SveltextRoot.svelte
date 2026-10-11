@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import type { MessageCatalog } from './runtime';
-	import { setLocale } from './runtime';
+	import { setBrowserContext } from './runtime';
 
 	interface Props {
 		locale: string;
@@ -14,9 +14,11 @@
 	let { locale, messages, syncLangAttribute, onInit, children }: Props = $props();
 
 	function initialize() {
-		setLocale(locale, messages);
-		if (syncLangAttribute !== false && typeof window !== 'undefined') {
-			document.documentElement.setAttribute('lang', locale);
+		if (typeof window !== 'undefined') {
+			setBrowserContext({ locale, messages });
+			if (syncLangAttribute !== false) {
+				document.documentElement.setAttribute('lang', locale);
+			}
 		}
 		onInit?.();
 	}

@@ -1,5 +1,6 @@
 import type { Handle } from '@sveltejs/kit';
-import { matchLocale } from '$lib/i18n';
+import { matchLocale, loadMessageCatalog } from '$lib/i18n';
+import { withSveltext } from 'sveltext/server';
 
 export const handle: Handle = async ({ event, resolve }) => {
 	let currentLocale = event.cookies.get('currentLocale');
@@ -19,9 +20,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 		secure: false
 	});
 
-	const response = await resolve(event, {
-		transformPageChunk: ({ html }) => html.replace('%lang%', currentLocale)
-	});
-
-	return response;
+	const messages = await loadMessageCatalog(currentLocale);
+	return withSveltext({ locale: currentLocale, messages }, () =>
+		resolve(event, {
+			transformPageChunk: ({ html }) => html.replace('%lang%', currentLocale)
+		})
+	);
 };
