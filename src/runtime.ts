@@ -36,6 +36,7 @@ export function getMessage(id: string, messages: MessageCatalog) {
 	if (!message) {
 		// @ts-ignore
 		if (import.meta.env.DEV) {
+			console.warn(`sveltext: msgid ${JSON.stringify(id)} is missing from the PO file.`);
 			return parseMessage(id);
 		}
 
