@@ -60,7 +60,7 @@
 		"build": "rm -rf dist && tsc -p tsconfig.build.json && cp ./src/*.svelte ./dist",
 		"test": "pnpm test:build && pnpm --filter sveltext-tests e2e",
 		"test:build": "pnpm --filter sveltext-tests build",
-		"format": "prettier --write ./src",
+		"format": "prettier --write ./{src,tests}",
 		"typecheck": "tsc --noEmit",
 		"changeset": "changeset",
 		"version-packages": "changeset version",

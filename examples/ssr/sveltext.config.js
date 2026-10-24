@@ -1,6 +1,6 @@
 /** @type {import('sveltext').Config} */
 const config = {
-	locales: ['en', 'ja'],
+	locales: ['en', 'zh-HK', 'ja'],
 	sourceLocale: 'en',
 	catalog: {
 		path: 'src/locales',

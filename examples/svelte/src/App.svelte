@@ -4,17 +4,20 @@
 	import Footer from './Footer.svelte';
 	import { loadMessageCatalog } from './lib/i18n';
 
-	let currentLocale: 'en' | 'ja' = $state('en');
+	const locales = ['en', 'zh-HK', 'ja'] as const;
+	let currentLocale: (typeof locales)[number] = $state('en');
 </script>
 
 {#key currentLocale}
 	{#await loadMessageCatalog(currentLocale) then messages}
 		<SveltextRoot locale={currentLocale} {messages}>
-			{#if currentLocale === 'en'}
-				<button data-testid="switch-locale" onclick={() => (currentLocale = 'ja')}>ja</button>
-			{:else}
-				<button data-testid="switch-locale" onclick={() => (currentLocale = 'en')}>en</button>
-			{/if}
+			{#each locales as locale (locale)}
+				{#if locale !== currentLocale}
+					<button data-testid={`switch-locale-${locale}`} onclick={() => (currentLocale = locale)}>
+						{locale}
+					</button>
+				{/if}
+			{/each}
 			<Page />
 			<Footer />
 		</SveltextRoot>
