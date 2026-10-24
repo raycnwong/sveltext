@@ -16,6 +16,10 @@ export function matchLocale(hint: string | null) {
 		if (hint.startsWith('ja')) {
 			return 'ja';
 		}
+
+		if (hint.toLowerCase().startsWith('zh-hk')) {
+			return 'zh-HK';
+		}
 	}
 
 	return 'en';

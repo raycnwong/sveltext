@@ -23,11 +23,11 @@
 <section>
 	<h2>{t`Switch language`}</h2>
 
-	{#each ['en', 'ja'] as locale (locale)}
+	{#each ['en', 'zh-HK', 'ja'] as locale (locale)}
 		{#if locale !== currentLocale}
 			<form method="POST" action="/?/setLocale" use:enhance>
 				<input type="hidden" name="locale" value={locale} />
-				<button data-testid="switch-locale" type="submit">
+				<button data-testid={`switch-locale-${locale}`} type="submit">
 					{locale}
 				</button>
 			</form>

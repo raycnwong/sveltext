@@ -1,0 +1,71 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: zh-HK\n"
+
+msgid "Component interpolation"
+msgstr "組件插值"
+
+msgid "Error while syncing items"
+msgstr "同步項目時發生錯誤"
+
+msgid "Found a bug or weird edge case? Please open an issue:"
+msgstr "發現 bug 或奇怪的極端狀況？請提交 issue："
+
+msgid "Hello {name}!"
+msgstr "你好 {name}！"
+
+msgid "Hello {name}. You have {itemLabel}."
+msgstr "你好 {name}。你有 {itemLabel} 。"
+
+msgid "Home Page"
+msgstr "首頁"
+
+msgid "Interpolated context message: {0}"
+msgstr "插值情境訊息: {0}"
+
+msgid "Interpolation and composition"
+msgstr "插值與合成"
+
+msgid ""
+"Line 1\\n"
+"Line 2"
+msgstr ""
+"第 1 行\\n"
+"第 2 行目"
+
+msgctxt "badge"
+msgid "New"
+msgstr "新"
+
+msgid "Plural"
+msgstr "眾數"
+
+msgid "Refresh"
+msgstr "重新整理"
+
+msgid "Refresh (fail)"
+msgstr "重新整理（失敗）"
+
+msgid "Refreshed"
+msgstr "更新成功"
+
+msgid "Sub Page"
+msgstr "副頁"
+
+msgid "Switch language"
+msgstr "切換語言"
+
+msgid "Test"
+msgstr "測試"
+
+msgid "Toolbar: {refresh} {refreshFail}"
+msgstr "工具列: {refresh} {refreshFail}"
+
+msgid "You have {itemCount} ({itemLabel})."
+msgstr "你有 {itemCount}（{itemLabel}）。"
+
+msgid "{itemCount, plural, one {# item} other {# items}}"
+msgstr "{itemCount, plural, other {# 個項目}}"

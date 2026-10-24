@@ -8,7 +8,6 @@ export class HomePage {
 	readonly summary: Locator;
 	readonly multiline: Locator;
 	readonly tsStatus: Locator;
-	readonly switchLocaleButton: Locator;
 	readonly refreshButton: Locator;
 	readonly refreshFailButton: Locator;
 	readonly sendEmailButton: Locator;
@@ -23,7 +22,6 @@ export class HomePage {
 		this.summary = page.getByTestId('summary');
 		this.multiline = page.getByTestId('multiline');
 		this.tsStatus = page.getByTestId('ts-status');
-		this.switchLocaleButton = page.getByTestId('switch-locale');
 		this.refreshButton = page.getByTestId('refresh');
 		this.refreshFailButton = page.getByTestId('refresh-fail');
 		this.sendEmailButton = page.getByTestId('send-email');
@@ -43,8 +41,12 @@ export class HomePage {
 		await this.decrementButton.click();
 	}
 
-	async switchLocale(): Promise<void> {
-		await this.switchLocaleButton.click();
+	switchLocaleButton(locale: string): Locator {
+		return this.page.getByTestId(`switch-locale-${locale}`);
+	}
+
+	async switchLocale(locale: string): Promise<void> {
+		await this.switchLocaleButton(locale).click();
 	}
 
 	async refresh(): Promise<string> {

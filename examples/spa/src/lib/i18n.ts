@@ -1,6 +1,6 @@
 import type { MessageCatalog } from 'sveltext';
 
-const supportedLocales = ['en', 'ja'];
+const supportedLocales = ['en', 'ja', 'zh-HK'];
 
 const catalogLoaders = import.meta.glob<MessageCatalog>('../locales/*.po', { import: 'messages' });
 
@@ -17,6 +17,10 @@ export function matchLocale(hint: string | null) {
 
 		if (hint.startsWith('ja')) {
 			return 'ja';
+		}
+
+		if (hint.toLowerCase().startsWith('zh-hk')) {
+			return 'zh-HK';
 		}
 	}
 
@@ -35,7 +39,7 @@ export function getCurrentLocale() {
 	}
 
 	const preferredLocale = navigator.languages.find((language) =>
-		supportedLocales.find((l) => language.startsWith(l))
+		supportedLocales.find((l) => language.toLowerCase().startsWith(l.toLowerCase()))
 	);
 
 	if (preferredLocale) {

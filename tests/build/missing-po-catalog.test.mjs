@@ -18,7 +18,10 @@ test('build fails when a configured locale has no PO catalog', async () => {
 			(error) => {
 				assert.match(error.message, /Missing catalog file for locale "ja"/);
 				assert.ok(error.message.includes(`Expected to find it at ${join('locales', 'ja.po')}`));
-				assert.match(error.message, /Please ensure a \.po file is created for every configured locale/);
+				assert.match(
+					error.message,
+					/Please ensure a \.po file is created for every configured locale/,
+				);
 				return true;
 			},
 		);

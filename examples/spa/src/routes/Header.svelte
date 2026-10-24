@@ -24,10 +24,10 @@
 <section>
 	<h2>{t`Switch language`}</h2>
 
-	{#each ['en', 'ja'] as lang (lang)}
+	{#each ['en', 'zh-HK', 'ja'] as lang (lang)}
 		{#if lang !== currentLocale}
 			<button
-				data-testid="switch-locale"
+				data-testid={`switch-locale-${lang}`}
 				type="button"
 				onclick={() => {
 					setCurrentLocale(lang);
