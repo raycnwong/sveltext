@@ -67,3 +67,21 @@ msgstr ""
 
 msgid "{itemCount, plural, one {# item} other {# items}}"
 msgstr ""
+
+msgid "Form validation"
+msgstr ""
+
+msgid "Text (1–6 characters)"
+msgstr ""
+
+msgid "Validate"
+msgstr ""
+
+msgid "Enter at least {MIN_LENGTH} character."
+msgstr ""
+
+msgid "Enter no more than 6 characters."
+msgstr ""
+
+msgid "Text accepted."
+msgstr ""

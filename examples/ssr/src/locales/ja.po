@@ -8,8 +8,17 @@ msgstr ""
 msgid "Component interpolation"
 msgstr "コンポーネント補間"
 
+msgid "Enter at least {MIN_LENGTH} character."
+msgstr "{MIN_LENGTH}文字以上入力してください。"
+
+msgid "Enter no more than 6 characters."
+msgstr "6文字以内で入力してください。"
+
 msgid "Error while syncing items"
 msgstr "アイテムの同期中にエラーが発生しました"
+
+msgid "Form validation"
+msgstr "フォームの検証"
 
 msgid "Found a bug or weird edge case? Please open an issue:"
 msgstr "バグや変なエッジケースを見つけたら、ぜひ Issue を作成してください："
@@ -70,11 +79,20 @@ msgstr "テスト"
 msgid "Test Email to {name}"
 msgstr "{name}へのテストメール"
 
+msgid "Text (1–6 characters)"
+msgstr "テキスト（1〜6文字）"
+
+msgid "Text accepted."
+msgstr "テキストを受け付けました。"
+
 msgid "Toolbar: {refresh} {refreshFail}"
 msgstr "ツールバー: {refresh} {refreshFail}"
 
 msgid "Translate on server"
 msgstr "サーバーで翻訳"
+
+msgid "Validate"
+msgstr "検証"
 
 msgid "You have {itemCount} ({itemLabel})."
 msgstr "{itemCount}（{itemLabel}）あります。"

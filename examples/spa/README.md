@@ -40,3 +40,9 @@ npm run build
 You can preview the production build with `npm run preview`.
 
 > To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+
+## Translated validation example
+
+The home page includes a text field that accepts 1–6 characters. Superforms runs in SPA mode and validates the form in the browser without a server action.
+
+`src/lib/schema.ts` defines the validation errors with `msg` inside the Zod schema. The form renders them with `t(error)`, translating the stored message descriptors in the active locale. English, Japanese, and Traditional Chinese catalogs include the form labels and validation messages.

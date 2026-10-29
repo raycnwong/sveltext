@@ -11,6 +11,10 @@ export class HomePage {
 	readonly refreshButton: Locator;
 	readonly refreshFailButton: Locator;
 	readonly sendEmailButton: Locator;
+	readonly validationText: Locator;
+	readonly validationErrors: Locator;
+	readonly validationSuccess: Locator;
+	private readonly validationSubmit: Locator;
 	private readonly incrementButton: Locator;
 	private readonly decrementButton: Locator;
 
@@ -25,6 +29,10 @@ export class HomePage {
 		this.refreshButton = page.getByTestId('refresh');
 		this.refreshFailButton = page.getByTestId('refresh-fail');
 		this.sendEmailButton = page.getByTestId('send-email');
+		this.validationText = page.getByTestId('validation-text');
+		this.validationErrors = page.getByTestId('validation-errors');
+		this.validationSuccess = page.getByTestId('validation-success');
+		this.validationSubmit = page.getByTestId('validation-submit');
 		this.incrementButton = page.getByTestId('increment');
 		this.decrementButton = page.getByTestId('decrement');
 	}
@@ -35,6 +43,11 @@ export class HomePage {
 
 	async increment(): Promise<void> {
 		await this.incrementButton.click();
+	}
+
+	async validateText(text: string): Promise<void> {
+		await this.validationText.fill(text);
+		await this.validationSubmit.click();
 	}
 
 	async decrement(): Promise<void> {

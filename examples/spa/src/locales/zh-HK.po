@@ -69,3 +69,21 @@ msgstr "你有 {itemCount}（{itemLabel}）。"
 
 msgid "{itemCount, plural, one {# item} other {# items}}"
 msgstr "{itemCount, plural, other {# 個項目}}"
+
+msgid "Form validation"
+msgstr "表單驗證"
+
+msgid "Text (1–6 characters)"
+msgstr "文字（1 至 6 個字元）"
+
+msgid "Validate"
+msgstr "驗證"
+
+msgid "Enter at least {MIN_LENGTH} character."
+msgstr "請輸入至少 {MIN_LENGTH} 個字元。"
+
+msgid "Enter no more than 6 characters."
+msgstr "請輸入不多於 6 個字元。"
+
+msgid "Text accepted."
+msgstr "文字已接受。"

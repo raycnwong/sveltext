@@ -1,6 +1,80 @@
 import { expect, test } from '@playwright/test';
 import { HomePage } from '../pages/Home.page';
 
+test('validates text length with messages defined in the Zod schema', async ({ page }) => {
+	const home = new HomePage(page);
+	await home.goto();
+	await expect(home.validationErrors).toBeHidden();
+	await expect(home.validationSuccess).toBeHidden();
+
+	await home.validateText('');
+	await expect(home.validationErrors).toHaveText('Enter at least 1 character.');
+	await expect(home.validationText).toHaveAttribute('aria-invalid', 'true');
+	await expect(home.validationSuccess).toBeHidden();
+
+	await home.validateText('a');
+	await expect(home.validationErrors).toBeHidden();
+	await expect(home.validationSuccess).toHaveText('Text accepted.');
+
+	await home.validateText('abcdef');
+	await expect(home.validationErrors).toBeHidden();
+	await expect(home.validationSuccess).toHaveText('Text accepted.');
+
+	await home.validateText('abcdefg');
+	await expect(home.validationErrors).toHaveText('Enter no more than 6 characters.');
+	await expect(home.validationSuccess).toBeHidden();
+});
+
+test('interpolates Zod validation messages after switching locales', async ({ page }) => {
+	const duplicateFormWarnings: string[] = [];
+	page.on('console', (message) => {
+		if (message.type() === 'warning' && message.text().includes('Duplicate form id')) {
+			duplicateFormWarnings.push(message.text());
+		}
+	});
+	const home = new HomePage(page);
+	await home.goto();
+
+	for (const [locale, required, tooLong, accepted] of [
+		[
+			'ja',
+			'1文字以上入力してください。',
+			'6文字以内で入力してください。',
+			'テキストを受け付けました。',
+		],
+		['zh-HK', '請輸入至少 1 個字元。', '請輸入不多於 6 個字元。', '文字已接受。'],
+		['en', 'Enter at least 1 character.', 'Enter no more than 6 characters.', 'Text accepted.'],
+	]) {
+		await home.switchLocale(locale);
+		await home.validateText('');
+		await expect(home.validationErrors).toHaveText(required);
+		await home.validateText('abcdefg');
+		await expect(home.validationErrors).toHaveText(tooLong);
+		await home.validateText('abcdef');
+		await expect(home.validationErrors).toBeHidden();
+		await expect(home.validationSuccess).toHaveText(accepted);
+	}
+	expect(duplicateFormWarnings).toEqual([]);
+});
+
+test('SSR validates and translates text without JavaScript', async ({ browser, baseURL }) => {
+	test.skip(test.info().project.name !== 'ssr', 'Requires server form actions');
+	const context = await browser.newContext({ baseURL, javaScriptEnabled: false, locale: 'ja' });
+	try {
+		const home = new HomePage(await context.newPage());
+		await home.goto();
+		await home.validateText('');
+		await expect(home.validationErrors).toHaveText('1文字以上入力してください。');
+		await home.validateText('abcdefg');
+		await expect(home.validationErrors).toHaveText('6文字以内で入力してください。');
+		await home.validateText('abcdef');
+		await expect(home.validationErrors).toBeHidden();
+		await expect(home.validationSuccess).toHaveText('テキストを受け付けました。');
+	} finally {
+		await context.close();
+	}
+});
+
 test('renders English translations and interpolated content', async ({ page }) => {
 	const home = new HomePage(page);
 	await home.goto();

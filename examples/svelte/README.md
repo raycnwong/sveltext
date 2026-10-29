@@ -45,3 +45,9 @@ If you have state that's important to retain within a component, consider creati
 import { writable } from 'svelte/store';
 export default writable(0);
 ```
+
+## Translated validation example
+
+The home page includes a text field that accepts 1–6 characters. Zod validates the form directly in the browser. Superforms requires SvelteKit APIs, so this standalone Vite example uses Zod without Superforms.
+
+`src/lib/schema.ts` defines the validation errors with `msg` inside the Zod schema. The form renders them with `t(error)`, translating the stored message descriptors in the active locale. English, Japanese, and Traditional Chinese catalogs include the form labels and validation messages.
