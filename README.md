@@ -95,7 +95,7 @@ Calling imported `t` before browser initialization or outside a server translati
 
 ### Lazy Translations (Module-Level Constants)
 
-Use `msg` for navigation arrays, constants, and other messages that should be translated later. It marks the string for extraction and compiles it to a descriptor, while deferring the dictionary lookup until `t` or `_` is called.
+Use `msg` for navigation arrays, constants, and other messages that should be translated later. It marks the string for extraction and compiles it to a string descriptor, while deferring the dictionary lookup until `t` or `_` is called. Descriptors use `hash\x1Ckey1\x1Evalue1\x1Dkey2\x1Evalue2`, or just `hash` without arguments. Interpolated values are converted to strings; `\x1D` is reserved as the argument separator.
 
 ```ts
 // src/lib/helpers.ts

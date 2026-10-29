@@ -12,6 +12,9 @@ msgstr ""
 msgid "Hello {name}!"
 msgstr ""
 
+msgid "Hello {name}: {count} {2}!"
+msgstr ""
+
 msgctxt "badge"
 msgid "New"
 msgstr ""

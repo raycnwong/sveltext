@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { getMessage, getTranslationContext } from './runtime';
+	import { getMessage, getTranslationContext, parseDescriptor } from './runtime';
 	import type { MessageDescriptor } from './runtime';
 
 	interface Props {
@@ -10,7 +10,8 @@
 
 	let { msg, ...snippets }: Props = $props();
 
-	let parts = $derived(getMessage(msg.id, getTranslationContext().messages)) as (
+	let descriptor = $derived(parseDescriptor(msg));
+	let parts = $derived(getMessage(descriptor.id, getTranslationContext().messages)) as (
 		keyof typeof snippets
 	)[];
 </script>
@@ -19,8 +20,8 @@
 	{#if part in snippets}
 		{@const snippet = snippets[part] as Snippet}
 		{@render snippet()}
-	{:else if msg.args && part in msg.args}
-		{msg.args[part]}
+	{:else if part in descriptor.args}
+		{descriptor.args[part]}
 	{:else}
 		{part}
 	{/if}
