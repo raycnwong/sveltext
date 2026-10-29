@@ -69,3 +69,21 @@ msgstr "{itemCount}（{itemLabel}）あります。"
 
 msgid "{itemCount, plural, one {# item} other {# items}}"
 msgstr "{itemCount, plural, other {#個のアイテム}}"
+
+msgid "Form validation"
+msgstr "フォームの検証"
+
+msgid "Text (1–6 characters)"
+msgstr "テキスト（1〜6文字）"
+
+msgid "Validate"
+msgstr "検証"
+
+msgid "Enter at least {MIN_LENGTH} character."
+msgstr "{MIN_LENGTH}文字以上入力してください。"
+
+msgid "Enter no more than 6 characters."
+msgstr "6文字以内で入力してください。"
+
+msgid "Text accepted."
+msgstr "テキストを受け付けました。"

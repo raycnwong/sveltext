@@ -8,8 +8,17 @@ msgstr ""
 msgid "Component interpolation"
 msgstr "組件插值"
 
+msgid "Enter at least {MIN_LENGTH} character."
+msgstr "請輸入至少 {MIN_LENGTH} 個字元。"
+
+msgid "Enter no more than 6 characters."
+msgstr "請輸入不多於 6 個字元。"
+
 msgid "Error while syncing items"
 msgstr "同步項目時發生錯誤"
+
+msgid "Form validation"
+msgstr "表單驗證"
 
 msgid "Found a bug or weird edge case? Please open an issue:"
 msgstr "發現 bug 或奇怪的極端狀況？請提交 issue："
@@ -70,11 +79,20 @@ msgstr "測試"
 msgid "Test Email to {name}"
 msgstr "給 {name} 的測試電郵"
 
+msgid "Text (1–6 characters)"
+msgstr "文字（1 至 6 個字元）"
+
+msgid "Text accepted."
+msgstr "文字已接受。"
+
 msgid "Toolbar: {refresh} {refreshFail}"
 msgstr "工具列: {refresh} {refreshFail}"
 
 msgid "Translate on server"
 msgstr "在伺服器上翻譯"
+
+msgid "Validate"
+msgstr "驗證"
 
 msgid "You have {itemCount} ({itemLabel})."
 msgstr "你有 {itemCount}（{itemLabel}）。"

@@ -8,7 +8,16 @@ msgstr ""
 msgid "Component interpolation"
 msgstr ""
 
+msgid "Enter at least {MIN_LENGTH} character."
+msgstr ""
+
+msgid "Enter no more than 6 characters."
+msgstr ""
+
 msgid "Error while syncing items"
+msgstr ""
+
+msgid "Form validation"
 msgstr ""
 
 msgid "Found a bug or weird edge case? Please open an issue:"
@@ -68,10 +77,19 @@ msgstr ""
 msgid "Test Email to {name}"
 msgstr ""
 
+msgid "Text (1–6 characters)"
+msgstr ""
+
+msgid "Text accepted."
+msgstr ""
+
 msgid "Toolbar: {refresh} {refreshFail}"
 msgstr ""
 
 msgid "Translate on server"
+msgstr ""
+
+msgid "Validate"
 msgstr ""
 
 msgid "You have {itemCount} ({itemLabel})."

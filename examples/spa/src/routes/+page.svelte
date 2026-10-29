@@ -1,6 +1,21 @@
 <script lang="ts">
 	import { c, msg, plural, t, T } from 'sveltext';
 	import { formatStatus, validateItems } from '$lib/helpers';
+	import { defaults, superForm } from 'sveltekit-superforms';
+	import { zod } from 'sveltekit-superforms/adapters/zod4';
+	import { textSchema } from '$lib/schema';
+
+	const id = $props.id();
+	const { form, errors, message, enhance } = superForm(defaults(zod(textSchema)), {
+		id,
+		SPA: true,
+		validators: zod(textSchema),
+		validationMethod: 'onsubmit',
+		resetForm: false,
+		onUpdate({ form }) {
+			if (form.valid) form.message = msg`Text accepted.`;
+		}
+	});
 
 	let name = 'John Doe';
 	let greeting = msg`Hello ${name}!`;
@@ -76,4 +91,32 @@
 			</button>
 		{/snippet}
 	</T>
+</section>
+
+<section>
+	<h2>{t`Form validation`}</h2>
+
+	<form method="POST" use:enhance novalidate>
+		<label for="validation-text">{t`Text (1–6 characters)`}</label>
+		<input
+			id="validation-text"
+			data-testid="validation-text"
+			type="text"
+			name="text"
+			bind:value={$form.text}
+			aria-invalid={$errors.text?.length ? 'true' : undefined}
+			aria-describedby={$errors.text?.length ? 'validation-errors' : undefined}
+		/>
+		{#if $errors.text?.length}
+			<div id="validation-errors" data-testid="validation-errors" role="alert">
+				{#each $errors.text ?? [] as error}
+					<p>{t(error)}</p>
+				{/each}
+			</div>
+		{/if}
+		<button data-testid="validation-submit" type="submit">{t`Validate`}</button>
+		{#if $message}
+			<p data-testid="validation-success" role="status">{t($message)}</p>
+		{/if}
+	</form>
 </section>

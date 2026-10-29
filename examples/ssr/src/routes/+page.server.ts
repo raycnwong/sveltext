@@ -1,7 +1,21 @@
-import { t } from 'sveltext';
-import type { Actions } from './$types';
+import { msg, t } from 'sveltext';
+import { fail } from '@sveltejs/kit';
+import { message, superValidate } from 'sveltekit-superforms/server';
+import { zod } from 'sveltekit-superforms/adapters/zod4';
+import { textSchema } from '$lib/schema';
+import type { Actions, PageServerLoad } from './$types';
+
+export const load = (async () => ({
+	form: await superValidate(zod(textSchema))
+})) satisfies PageServerLoad;
 
 export const actions = {
+	validateText: async ({ request }) => {
+		const form = await superValidate(request, zod(textSchema));
+		if (!form.valid) return fail(400, { form });
+		return message(form, msg`Text accepted.`);
+	},
+
 	setLocale: async (event) => {
 		const formData = await event.request.formData();
 		const nextLocale = formData.get('locale');

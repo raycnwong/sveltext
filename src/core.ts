@@ -5,6 +5,12 @@ import type { AST as SvelteAST } from 'svelte/compiler';
 import { parse as icuParse, isArgumentElement } from '@formatjs/icu-messageformat-parser';
 import crypto from 'crypto';
 import path from 'node:path';
+import {
+	MESSAGE_CONTEXT_SEPARATOR,
+	MESSAGE_ARGUMENTS_SEPARATOR,
+	ARGUMENT_SEPARATOR,
+	ARGUMENT_VALUE_SEPARATOR,
+} from './descriptor.ts';
 
 export type WithPositions<T> = T extends { type: string }
 	? T & { start: number; end: number }
@@ -76,10 +82,8 @@ export async function resolveConfig() {
 	return config as Config;
 }
 
-const UNIT_SEPARATOR = '\u001F';
-
 export function generateMessageId(msg: string, context: string = '') {
-	const handledMsg = msg + UNIT_SEPARATOR + (context || '');
+	const handledMsg = msg + MESSAGE_CONTEXT_SEPARATOR + (context || '');
 
 	if (process.env.NODE_ENV === 'development') {
 		return handledMsg;
@@ -125,8 +129,11 @@ export function transformTaggedTemplateExpression(
 	const idLiteral = JSON.stringify(id);
 
 	if (tagName === 'plural') {
-		const variable = expressions.length === 0 ? '' : `, args: ${expressions[0]}`;
-		s.overwrite(start, end, `${translator}({ id: ${idLiteral}${variable} })`);
+		const descriptor =
+			expressions.length === 0
+				? idLiteral
+				: `${JSON.stringify(`${id}${MESSAGE_ARGUMENTS_SEPARATOR}${expressions[0]}${ARGUMENT_VALUE_SEPARATOR}`)} + (${expressions[0]})`;
+		s.overwrite(start, end, `${translator}(${descriptor})`);
 		return;
 	}
 
@@ -134,9 +141,9 @@ export function transformTaggedTemplateExpression(
 		let replacement;
 
 		if (tagName === 'msg') {
-			replacement = `{ id: ${idLiteral} }`;
+			replacement = idLiteral;
 		} else {
-			replacement = `${translator}({ id: ${idLiteral} })`;
+			replacement = `${translator}(${idLiteral})`;
 		}
 
 		s.overwrite(start, end, replacement);
@@ -145,24 +152,21 @@ export function transformTaggedTemplateExpression(
 		let prefix;
 
 		if (tagName === 'msg') {
-			prefix = `{ id: ${idLiteral}, args: { `;
+			prefix = '(';
 		} else {
-			prefix = `${translator}({ id: ${idLiteral}, args: { `;
+			prefix = `${translator}(`;
 		}
 
 		for (let i = 0; i < expressions.length; i++) {
 			const expr = expressions[i];
 			const varName = inferVariableName(expr, i);
-			s.overwrite(currentIndex, expr.start, `${prefix}${JSON.stringify(varName)}: `);
+			const field = `${i === 0 ? `${id}${MESSAGE_ARGUMENTS_SEPARATOR}` : ARGUMENT_SEPARATOR}${varName}${ARGUMENT_VALUE_SEPARATOR}`;
+			s.overwrite(currentIndex, expr.start, `${prefix}${JSON.stringify(field)} + (`);
 			currentIndex = expr.end;
-			prefix = `, `;
+			prefix = ') + ';
 		}
 
-		if (tagName === 'msg') {
-			s.overwrite(currentIndex, end, ` } }`);
-		} else {
-			s.overwrite(currentIndex, end, ` } })`);
-		}
+		s.overwrite(currentIndex, end, '))');
 	}
 }
 

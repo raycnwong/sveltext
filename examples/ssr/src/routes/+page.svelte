@@ -2,6 +2,28 @@
 	import { c, msg, plural, T, t } from 'sveltext';
 	import { formatStatus, validateItems } from '$lib/helpers';
 	import { enhance } from '$app/forms';
+	import { untrack } from 'svelte';
+	import { superForm } from 'sveltekit-superforms';
+	import { zodClient } from 'sveltekit-superforms/adapters/zod4';
+	import { textSchema } from '$lib/schema';
+	import type { PageProps } from './$types';
+
+	let { data }: PageProps = $props();
+	const id = $props.id();
+	const {
+		form,
+		errors,
+		message,
+		enhance: enhanceText
+	} = superForm(
+		untrack(() => data.form),
+		{
+			id,
+			validators: zodClient(textSchema),
+			validationMethod: 'onsubmit',
+			resetForm: false
+		}
+	);
 
 	let name = 'John Doe';
 	let greeting = msg`Hello ${name}!`;
@@ -91,5 +113,34 @@
 		}}
 	>
 		<button data-testid="send-email" type="submit">{t`Send Email`}</button>
+	</form>
+</section>
+
+<section>
+	<h2>{t`Form validation`}</h2>
+
+	<form method="POST" action="?/validateText" use:enhanceText novalidate>
+		<input type="hidden" name="__superform_id" value={id} />
+		<label for="validation-text">{t`Text (1–6 characters)`}</label>
+		<input
+			id="validation-text"
+			data-testid="validation-text"
+			type="text"
+			name="text"
+			bind:value={$form.text}
+			aria-invalid={$errors.text?.length ? 'true' : undefined}
+			aria-describedby={$errors.text?.length ? 'validation-errors' : undefined}
+		/>
+		{#if $errors.text?.length}
+			<div id="validation-errors" data-testid="validation-errors" role="alert">
+				{#each $errors.text ?? [] as error}
+					<p>{t(error)}</p>
+				{/each}
+			</div>
+		{/if}
+		<button data-testid="validation-submit" type="submit">{t`Validate`}</button>
+		{#if $message}
+			<p data-testid="validation-success" role="status">{t($message)}</p>
+		{/if}
 	</form>
 </section>
