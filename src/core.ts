@@ -299,7 +299,8 @@ export function traverse(ast: AST, state: TraverseState, sourceLocale: string) {
 				if (node.arguments[0].type === 'Literal' && typeof node.arguments[0].value === 'number') {
 					const value = node.arguments[0].value;
 					const category = pr.select(value);
-					const message = selectors[category].replaceAll('#', value);
+					const formattedCount = new Intl.NumberFormat(sourceLocale).format(value);
+					const message = selectors[category].replaceAll('#', formattedCount);
 					const { start, end } = node;
 					state.messages.push({
 						context: '',

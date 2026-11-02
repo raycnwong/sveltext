@@ -3,6 +3,12 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Language: ja\n"
 
+msgid "1,000 items"
+msgstr "1,000個のアイテム"
+
+msgid "1,000.5 items (1,000.5 total)"
+msgstr "1,000.5個のアイテム（合計1,000.5）"
+
 msgid "{count, plural, one {# item} other {# items}}"
 msgstr "{count, plural, other {#個のアイテム}}"
 

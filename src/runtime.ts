@@ -80,7 +80,8 @@ export function _(descriptor: MessageDescriptor, { messages, locale }: SveltextC
 		const category = pr.select(count);
 		const selectorTokens: string[] =
 			category in selectors ? selectors[category] : selectors['other'];
-		return selectorTokens.map((token) => (token === '#' ? count : token)).join('');
+		const formattedCount = new Intl.NumberFormat(locale).format(count);
+		return selectorTokens.map((token) => (token === '#' ? formattedCount : token)).join('');
 	}
 
 	return tokens

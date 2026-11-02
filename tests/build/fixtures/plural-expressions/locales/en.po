@@ -3,6 +3,12 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Language: en\n"
 
+msgid "1,000 items"
+msgstr ""
+
+msgid "1,000.5 items (1,000.5 total)"
+msgstr ""
+
 msgid "{count, plural, one {# item} other {# items}}"
 msgstr ""
 

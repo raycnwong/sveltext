@@ -41,20 +41,48 @@ test('plural count expressions compile in TypeScript and nested Svelte translati
 			[1, '1 item'],
 			[2, '2 items'],
 			[10, '10 items'],
+			[999, '999 items'],
+			[1000, '1,000 items'],
+			[1000000, '1,000,000 items'],
+			[1000.5, '1,000.5 items'],
+			[-1000, '-1,000 items'],
 		],
 		ja: [
 			[0, '0個のアイテム'],
 			[1, '1個のアイテム'],
 			[2, '2個のアイテム'],
 			[10, '10個のアイテム'],
+			[999, '999個のアイテム'],
+			[1000, '1,000個のアイテム'],
+			[1000000, '1,000,000個のアイテム'],
+			[1000.5, '1,000.5個のアイテム'],
+			[-1000, '-1,000個のアイテム'],
 		],
 	};
+
+	await t.test('formats using the active locale', () => {
+		const context = { locale: 'de', messages: app.en };
+		assert.equal(
+			app.withSveltext(context, () => app.callLabel(() => 1000.5)),
+			'1.000,5 items',
+		);
+	});
 
 	for (const [locale, countCases] of Object.entries(cases)) {
 		const context = { locale, messages: app[locale] };
 		const translate = (callback) => app.withSveltext(context, callback);
 
 		await t.test(locale, async (t) => {
+			await t.test('inlines formatted literal counts into the same messages as t templates', () => {
+				const expected =
+					locale === 'ja'
+						? ['1,000個のアイテム', '1,000.5個のアイテム（合計1,000.5）']
+						: ['1,000 items', '1,000.5 items (1,000.5 total)'];
+
+				assert.deepEqual(translate(app.literalLabels), expected);
+				assert.deepEqual(translate(app.literalLabels), translate(app.literalTemplateLabels));
+			});
+
 			for (const [name, label] of [
 				['member access', app.memberLabel],
 				['computed access', app.computedLabel],
