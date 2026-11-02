@@ -1,5 +1,15 @@
 # sveltext
 
+## 0.4.0
+
+### Minor Changes
+
+- [#38](https://github.com/raycnwong/sveltext/pull/38) [`cf1c316`](https://github.com/raycnwong/sveltext/commit/cf1c316914ac265fe60e4fd9a577a5fbbab80145) Thanks [@raycnwong](https://github.com/raycnwong)! - Add `getLocale()` to read the active browser locale or the current server `withSveltext` scope's locale.
+
+### Patch Changes
+
+- [#36](https://github.com/raycnwong/sveltext/pull/36) [`918043a`](https://github.com/raycnwong/sveltext/commit/918043acfdc0e2eeb8f8971dfdb7f61f9ffa97b4) Thanks [@raycnwong](https://github.com/raycnwong)! - Fix `plural()` with member access and other count expressions, including calls nested in translated Svelte templates. Evaluate each count expression only once.
+
 ## 0.3.0
 
 ### Minor Changes
