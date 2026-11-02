@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { c, msg, plural, t, T } from 'sveltext';
-	import { formatStatus, validateItems } from '$lib/helpers';
+	import { formatStatus, validateItems } from '#lib/helpers.ts';
 	import { defaults, superForm } from 'sveltekit-superforms';
 	import { zod } from 'sveltekit-superforms/adapters/zod4';
-	import { textSchema } from '$lib/schema';
+	import { textSchema } from '#lib/schema.ts';
 
 	const id = $props.id();
 	const { form, errors, message, enhance } = superForm(defaults(zod(textSchema)), {

@@ -1,48 +1,48 @@
-# sv
+# Sveltext SvelteKit SPA example
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Demonstrates English, Japanese, and Traditional Chinese translations, plurals,
+interpolation, message composition, component snippets, and TypeScript helpers.
 
-## Creating a project
+The root layout disables SSR with `ssr = false`. The browser chooses a locale
+from local storage or its preferred languages, loads the catalog, and passes it
+to `SveltextRoot`. Language switching stores the selection and refreshes the layout.
 
-If you're seeing this, you've probably already done this step. Congrats!
+The home page demonstrates translated Zod validation with Superforms in SPA mode.
+Validation runs entirely in the browser without server actions.
 
-```sh
-# create a new project
-npx sv create my-app
-```
+## Run
 
-To recreate this project with the same configuration:
-
-```sh
-# recreate this project
-pnpm dlx sv create --template minimal --types ts --add eslint prettier --install pnpm basic
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+From the repository root, using Node.js 22.17+ and the pinned pnpm version:
 
 ```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+pnpm install
+pnpm --filter sveltext-spa-example dev
+pnpm --filter sveltext-spa-example check
+pnpm --filter sveltext-spa-example build
+pnpm --filter sveltext-spa-example preview
 ```
 
-## Building
-
-To create a production version of your app:
+After adding or changing messages, update the catalogs with:
 
 ```sh
-npm run build
+pnpm --filter sveltext-spa-example extract
 ```
 
-You can preview the production build with `npm run preview`.
+The shared browser suite covers all three examples; run it with `pnpm test` from
+the repository root.
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+## Template
 
-## Translated validation example
+Regenerated from the [Svelte CLI minimal TypeScript template](https://svelte.dev/docs/cli/sv-create) with:
 
-The home page includes a text field that accepts 1–6 characters. Superforms runs in SPA mode and validates the form in the browser without a server action.
+```sh
+npx sv@1.2.0 create spa --template minimal --types ts --no-add-ons --no-install
+```
 
-`src/lib/schema.ts` defines the validation errors with `msg` inside the Zod schema. The form renders them with `t(error)`, translating the stored message descriptors in the active locale. English, Japanese, and Traditional Chinese catalogs include the form labels and validation messages.
+The demo adds the Sveltext Vite plugin, `sveltext.config.js`, locale catalogs,
+`SveltextRoot`, Zod, and Superforms. Both SvelteKit examples use the Node
+adapter for production builds. SvelteKit configuration lives in `vite.config.ts`,
+and local library imports use `#lib/*`.
+
+Starter pages, logos, styles, and optional lint/format tooling are omitted so the
+example contains only the app setup and demo code.

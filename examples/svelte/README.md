@@ -1,53 +1,45 @@
-# Svelte + TS + Vite
+# Sveltext Svelte + Vite example
 
-This template should help get you started developing with Svelte and TypeScript in Vite.
+Demonstrates English, Japanese, and Traditional Chinese translations, plurals,
+interpolation, message composition, component snippets, and TypeScript helpers.
 
-## Recommended IDE Setup
+`src/App.svelte` loads the selected locale's catalog and passes it to
+`SveltextRoot`. Language switching runs entirely in the browser.
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+The home page demonstrates translated form validation directly with Zod, without
+SvelteKit or Superforms.
 
-## Need an official Svelte framework?
+## Run
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+From the repository root, using Node.js 22.17+ and the pinned pnpm version:
 
-## Technical considerations
-
-**Why use this over SvelteKit?**
-
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
-
-This template contains as little as possible to get started with Vite + TypeScript + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
-
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
-
-**Why `global.d.ts` instead of `compilerOptions.types` inside `jsconfig.json` or `tsconfig.json`?**
-
-Setting `compilerOptions.types` shuts out all other types not explicitly listed in the configuration. Using triple-slash references keeps the default TypeScript setting of accepting type information from the entire workspace, while also adding `svelte` and `vite/client` type information.
-
-**Why include `.vscode/extensions.json`?**
-
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
-
-**Why enable `allowJs` in the TS template?**
-
-While `allowJs: false` would indeed prevent the use of `.js` files in the project, it does not prevent the use of JavaScript syntax in `.svelte` files. In addition, it would force `checkJs: false`, bringing the worst of both worlds: not being able to guarantee the entire codebase is TypeScript, and also having worse typechecking for the existing JavaScript. In addition, there are valid use cases in which a mixed codebase may be relevant.
-
-**Why is HMR not preserving my local component state?**
-
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/rixo/svelte-hmr#svelte-hmr).
-
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
-
-```ts
-// store.ts
-// An extremely simple external store
-import { writable } from 'svelte/store';
-export default writable(0);
+```sh
+pnpm install
+pnpm --filter sveltext-svelte-example dev
+pnpm --filter sveltext-svelte-example check
+pnpm --filter sveltext-svelte-example build
+pnpm --filter sveltext-svelte-example preview
 ```
 
-## Translated validation example
+After adding or changing messages, update the catalogs with:
 
-The home page includes a text field that accepts 1–6 characters. Zod validates the form directly in the browser. Superforms requires SvelteKit APIs, so this standalone Vite example uses Zod without Superforms.
+```sh
+pnpm --filter sveltext-svelte-example extract
+```
 
-`src/lib/schema.ts` defines the validation errors with `msg` inside the Zod schema. The form renders them with `t(error)`, translating the stored message descriptors in the active locale. English, Japanese, and Traditional Chinese catalogs include the form labels and validation messages.
+The shared browser suite covers all three examples; run it with `pnpm test` from
+the repository root.
+
+## Template
+
+Regenerated from the [Vite Svelte TypeScript template](https://vite.dev/guide/#scaffolding-your-first-vite-project) with:
+
+```sh
+npm create vite@9.3.3 svelte -- --template svelte-ts --no-interactive
+```
+
+The demo adds the Sveltext Vite plugin, `sveltext.config.js`, locale catalogs,
+`SveltextRoot`, and Zod.
+
+Starter pages, logos, styles, and optional lint/format tooling are omitted so the
+example contains only the app setup and demo code.

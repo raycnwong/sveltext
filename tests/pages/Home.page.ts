@@ -62,6 +62,7 @@ export class HomePage {
 
 	async switchLocale(locale: string): Promise<void> {
 		await this.switchLocaleButton(locale).click();
+		await this.switchLocaleButton(locale).waitFor({ state: 'hidden' });
 	}
 
 	async refresh(): Promise<string> {
