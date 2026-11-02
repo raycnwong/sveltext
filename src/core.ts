@@ -46,6 +46,15 @@ interface Config {
 	};
 }
 
+const pluralFormatters = new Map<
+	string,
+	{
+		pluralRules: Intl.PluralRules;
+		pluralCategories: Intl.LDMLPluralRule[];
+		numberFormat?: Intl.NumberFormat;
+	}
+>();
+
 export async function resolveConfig() {
 	const { default: config } = await import(path.join(process.cwd(), 'sveltext.config.js'));
 
@@ -271,8 +280,16 @@ export function traverse(ast: AST, state: TraverseState, sourceLocale: string) {
 				node.arguments.length === 2 &&
 				node.arguments[1].type === 'ObjectExpression'
 			) {
-				const pr = new Intl.PluralRules(sourceLocale);
-				const { pluralCategories } = pr.resolvedOptions();
+				let formatters = pluralFormatters.get(sourceLocale);
+				if (!formatters) {
+					const pluralRules = new Intl.PluralRules(sourceLocale);
+					formatters = {
+						pluralRules,
+						pluralCategories: pluralRules.resolvedOptions().pluralCategories,
+					};
+					pluralFormatters.set(sourceLocale, formatters);
+				}
+				const { pluralRules, pluralCategories } = formatters;
 				const selectors = Object.create(null);
 
 				for (const property of node.arguments[1].properties) {
@@ -298,8 +315,11 @@ export function traverse(ast: AST, state: TraverseState, sourceLocale: string) {
 
 				if (node.arguments[0].type === 'Literal' && typeof node.arguments[0].value === 'number') {
 					const value = node.arguments[0].value;
-					const category = pr.select(value);
-					const formattedCount = new Intl.NumberFormat(sourceLocale).format(value);
+					const category = pluralRules.select(value);
+					if (!formatters.numberFormat) {
+						formatters.numberFormat = new Intl.NumberFormat(sourceLocale);
+					}
+					const formattedCount = formatters.numberFormat.format(value);
 					const message = selectors[category].replaceAll('#', formattedCount);
 					const { start, end } = node;
 					state.messages.push({
