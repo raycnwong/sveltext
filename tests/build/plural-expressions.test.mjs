@@ -34,7 +34,37 @@ async function buildFixture() {
 }
 
 test('plural count expressions compile in TypeScript and nested Svelte translations', async (t) => {
-	const app = await buildFixture();
+	let app;
+	await t.test(
+		'build reuses plural formatters and categories across TypeScript and Svelte',
+		async (t) => {
+			const pluralRulesLocales = [];
+			const numberFormatLocales = [];
+			for (const [name, locales] of [
+				['PluralRules', pluralRulesLocales],
+				['NumberFormat', numberFormatLocales],
+			]) {
+				t.mock.method(
+					Intl,
+					name,
+					new Proxy(Intl[name], {
+						construct(target, args) {
+							locales.push(args[0]);
+							return Reflect.construct(target, args);
+						},
+					}),
+				);
+			}
+			const resolvedOptions = t.mock.method(Intl.PluralRules.prototype, 'resolvedOptions');
+
+			app = await buildFixture();
+
+			// Config validation constructs one instance per locale; compilation needs one more.
+			assert.deepEqual(pluralRulesLocales, ['en', 'ja', 'en']);
+			assert.deepEqual(numberFormatLocales, ['en']);
+			assert.equal(resolvedOptions.mock.callCount(), 1);
+		},
+	);
 	const cases = {
 		en: [
 			[0, '0 items'],
@@ -59,6 +89,43 @@ test('plural count expressions compile in TypeScript and nested Svelte translati
 			[-1000, '-1,000個のアイテム'],
 		],
 	};
+
+	await t.test('reuses plural rules and number formats per locale across contexts', (t) => {
+		const pluralRulesLocales = [];
+		const numberFormatLocales = [];
+		for (const [name, locales] of [
+			['PluralRules', pluralRulesLocales],
+			['NumberFormat', numberFormatLocales],
+		]) {
+			t.mock.method(
+				Intl,
+				name,
+				new Proxy(Intl[name], {
+					construct(target, args) {
+						locales.push(args[0]);
+						return Reflect.construct(target, args);
+					},
+				}),
+			);
+		}
+
+		for (const locale of ['en', 'de', 'ja', 'en', 'ja', 'de']) {
+			const context = { locale, messages: app[locale] ?? app.en };
+			const translate = (count) => app.withSveltext(context, () => app.callLabel(() => count));
+			assert.equal(translate(1), locale === 'ja' ? '1個のアイテム' : '1 item');
+			assert.equal(
+				translate(1000.5),
+				locale === 'ja'
+					? '1,000.5個のアイテム'
+					: locale === 'de'
+						? '1.000,5 items'
+						: '1,000.5 items',
+			);
+		}
+
+		assert.deepEqual(pluralRulesLocales, ['en', 'de', 'ja']);
+		assert.deepEqual(numberFormatLocales, ['en', 'de', 'ja']);
+	});
 
 	await t.test('formats using the active locale', () => {
 		const context = { locale: 'de', messages: app.en };

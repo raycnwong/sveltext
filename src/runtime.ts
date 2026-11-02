@@ -29,6 +29,10 @@ export function parseDescriptor(descriptor: MessageDescriptor) {
 
 let browserContext: SveltextContext | undefined;
 let resolveServerContext: (() => SveltextContext | undefined) | undefined;
+const pluralFormatters = new Map<
+	string,
+	{ pluralRules: Intl.PluralRules; numberFormat: Intl.NumberFormat }
+>();
 
 export function setServerContextResolver(resolve: () => SveltextContext | undefined) {
 	resolveServerContext = resolve;
@@ -75,12 +79,19 @@ export function _(descriptor: MessageDescriptor, { messages, locale }: SveltextC
 
 	if (Array.isArray(tokens[0]) && tokens[0][1] === 'plural' && tokens[0][0] in args) {
 		const count = Number(args[tokens[0][0]]);
-		const pr = new Intl.PluralRules(locale);
+		let formatters = pluralFormatters.get(locale);
+		if (!formatters) {
+			formatters = {
+				pluralRules: new Intl.PluralRules(locale),
+				numberFormat: new Intl.NumberFormat(locale),
+			};
+			pluralFormatters.set(locale, formatters);
+		}
 		const selectors = tokens[0][2];
-		const category = pr.select(count);
+		const category = formatters.pluralRules.select(count);
 		const selectorTokens: string[] =
 			category in selectors ? selectors[category] : selectors['other'];
-		const formattedCount = new Intl.NumberFormat(locale).format(count);
+		const formattedCount = formatters.numberFormat.format(count);
 		return selectorTokens.map((token) => (token === '#' ? formattedCount : token)).join('');
 	}
 
