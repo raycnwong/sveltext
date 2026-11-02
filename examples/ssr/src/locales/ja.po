@@ -94,8 +94,14 @@ msgstr "サーバーで翻訳"
 msgid "Validate"
 msgstr "検証"
 
+msgid "You have {0} ({itemLabel})."
+msgstr "{0}（{itemLabel}）あります。"
+
 msgid "You have {itemCount} ({itemLabel})."
 msgstr "{itemCount}（{itemLabel}）あります。"
+
+msgid "{count, plural, one {# item} other {# items}}"
+msgstr "{count, plural, other {#個のアイテム}}"
 
 msgid "{itemCount, plural, one {# item} other {# items}}"
 msgstr "{itemCount, plural, other {#個のアイテム}}"

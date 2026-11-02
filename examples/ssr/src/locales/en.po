@@ -92,7 +92,13 @@ msgstr ""
 msgid "Validate"
 msgstr ""
 
+msgid "You have {0} ({itemLabel})."
+msgstr ""
+
 msgid "You have {itemCount} ({itemLabel})."
+msgstr ""
+
+msgid "{count, plural, one {# item} other {# items}}"
 msgstr ""
 
 msgid "{itemCount, plural, one {# item} other {# items}}"

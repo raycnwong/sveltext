@@ -1,0 +1,13 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Language: ja\n"
+
+msgid "{count, plural, one {# item} other {# items}}"
+msgstr "{count, plural, other {#個のアイテム}}"
+
+msgid "{0, plural, one {# item} other {# items}}"
+msgstr "{0, plural, other {#個のアイテム}}"
+
+msgid "You have {0} ({itemLabel})."
+msgstr "{0}（{itemLabel}）あります。"

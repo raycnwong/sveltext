@@ -64,8 +64,14 @@ msgstr "測試"
 msgid "Toolbar: {refresh} {refreshFail}"
 msgstr "工具列: {refresh} {refreshFail}"
 
+msgid "You have {0} ({itemLabel})."
+msgstr "你有 {0}（{itemLabel}）。"
+
 msgid "You have {itemCount} ({itemLabel})."
 msgstr "你有 {itemCount}（{itemLabel}）。"
+
+msgid "{count, plural, one {# item} other {# items}}"
+msgstr "{count, plural, other {# 個項目}}"
 
 msgid "{itemCount, plural, one {# item} other {# items}}"
 msgstr "{itemCount, plural, other {# 個項目}}"

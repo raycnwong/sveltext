@@ -18,24 +18,14 @@ export type WithPositions<T> = T extends { type: string }
 
 export type AST = WithPositions<SvelteAST.SvelteNode | Program>;
 
-interface ExtractedMessageBase {
+interface ExtractedMessage {
 	context: string;
 	message: string;
 	start: number;
 	end: number;
-}
-
-interface ExtractedRegularMessage extends ExtractedMessageBase {
 	expressions: Expression[];
-	tagName: 't' | 'msg';
+	tagName: 't' | 'msg' | 'plural';
 }
-
-interface ExtractedPluralMessage extends ExtractedMessageBase {
-	expressions: string[];
-	tagName: 'plural';
-}
-
-type ExtractedMessage = ExtractedRegularMessage | ExtractedPluralMessage;
 
 interface TraverseStateError {
 	start: number;
@@ -127,15 +117,6 @@ export function transformTaggedTemplateExpression(
 ) {
 	const id = generateMessageId(message, context);
 	const idLiteral = JSON.stringify(id);
-
-	if (tagName === 'plural') {
-		const descriptor =
-			expressions.length === 0
-				? idLiteral
-				: `${JSON.stringify(`${id}${MESSAGE_ARGUMENTS_SEPARATOR}${expressions[0]}${ARGUMENT_VALUE_SEPARATOR}`)} + (${expressions[0]})`;
-		s.overwrite(start, end, `${translator}(${descriptor})`);
-		return;
-	}
 
 	if (expressions.length === 0) {
 		let replacement;
@@ -328,10 +309,9 @@ export function traverse(ast: AST, state: TraverseState, sourceLocale: string) {
 						expressions: [],
 						tagName: 'plural',
 					});
-				}
-
-				if (node.arguments[0].type === 'Identifier') {
-					const variable = node.arguments[0].name;
+				} else if (node.arguments[0].type !== 'SpreadElement') {
+					const count = node.arguments[0] as Expression;
+					const variable = inferVariableName(count, 0);
 					const message = `{${variable}, plural, ${Object.entries(selectors)
 						.map(([selectorName, selectorValue]) => `${selectorName} {${selectorValue}}`)
 						.join(' ')}}`;
@@ -341,7 +321,7 @@ export function traverse(ast: AST, state: TraverseState, sourceLocale: string) {
 						message,
 						start,
 						end,
-						expressions: [variable],
+						expressions: [count],
 						tagName: 'plural',
 					});
 				}

@@ -4,6 +4,7 @@ export class HomePage {
 	readonly greeting: Locator;
 	readonly itemLabel: Locator;
 	readonly countSummary: Locator;
+	readonly memberCountSummary: Locator;
 	readonly contextMessage: Locator;
 	readonly summary: Locator;
 	readonly multiline: Locator;
@@ -22,6 +23,7 @@ export class HomePage {
 		this.greeting = page.getByTestId('greeting');
 		this.itemLabel = page.getByTestId('item-label');
 		this.countSummary = page.getByTestId('count-summary');
+		this.memberCountSummary = page.getByTestId('member-count-summary');
 		this.contextMessage = page.getByTestId('context-message');
 		this.summary = page.getByTestId('summary');
 		this.multiline = page.getByTestId('multiline');
