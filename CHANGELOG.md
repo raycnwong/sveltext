@@ -1,5 +1,11 @@
 # sveltext
 
+## 0.4.1
+
+### Patch Changes
+
+- [#40](https://github.com/raycnwong/sveltext/pull/40) [`38b489b`](https://github.com/raycnwong/sveltext/commit/38b489b47f440ad773336e21b4eaf3a457feb1c7) Thanks [@raycnwong](https://github.com/raycnwong)! - Format plural `#` counts with `Intl.NumberFormat`, using the active locale at runtime and the configured source locale for numeric literals inlined at compile time.
+
 ## 0.4.0
 
 ### Minor Changes
