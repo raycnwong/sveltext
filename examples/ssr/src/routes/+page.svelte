@@ -36,6 +36,14 @@
 		})
 	);
 
+	const response = {
+		data: {
+			item: {
+				count: 10
+			}
+		}
+	};
+
 	const summary = $derived(t`Hello ${name}. You have ${itemLabel}.`);
 
 	async function goRefresh(success = true) {
@@ -76,6 +84,13 @@
 	<p data-testid="greeting">{t(greeting)}</p>
 
 	<p data-testid="count-summary">{t`You have ${itemCount} (${itemLabel}).`}</p>
+
+	<p data-testid="member-count-summary">
+		{t`You have ${plural(response.data.item.count, {
+			one: '# item',
+			other: '# items'
+		})} (${itemLabel}).`}
+	</p>
 
 	<p data-testid="context-message">{t`Interpolated context message: ${c('badge').t`New`}`}</p>
 

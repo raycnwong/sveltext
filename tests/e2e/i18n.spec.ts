@@ -82,6 +82,7 @@ test('renders English translations and interpolated content', async ({ page }) =
 	await expect(home.greeting).toHaveText('Hello John Doe!');
 	await expect(home.itemLabel).toHaveText('1 item');
 	await expect(home.countSummary).toHaveText('You have 1 (1 item).');
+	await expect(home.memberCountSummary).toHaveText('You have 10 items (1 item).');
 	await expect(home.contextMessage).toHaveText('Interpolated context message: New');
 	await expect(home.summary).toHaveText('Hello John Doe. You have 1 item.');
 	await expect(home.multiline).toHaveText('Line 1\nLine 2');
@@ -95,6 +96,7 @@ test('updates plurals and composed messages, with a zero floor', async ({ page }
 	await home.increment();
 	await expect(home.itemLabel).toHaveText('2 items');
 	await expect(home.countSummary).toHaveText('You have 2 (2 items).');
+	await expect(home.memberCountSummary).toHaveText('You have 10 items (2 items).');
 	await expect(home.summary).toHaveText('Hello John Doe. You have 2 items.');
 
 	await home.decrement();
@@ -114,6 +116,7 @@ test('switches translations to Japanese and back', async ({ page }) => {
 	await expect(home.greeting).toHaveText('こんにちは、John Doeさん！');
 	await expect(home.itemLabel).toHaveText('1個のアイテム');
 	await expect(home.countSummary).toHaveText('1（1個のアイテム）あります。');
+	await expect(home.memberCountSummary).toHaveText('10個のアイテム（1個のアイテム）あります。');
 	await expect(home.contextMessage).toHaveText('補間されたコンテキストメッセージ: 新着');
 	await expect(home.summary).toHaveText('こんにちは、John Doeさん。1個のアイテム あります。');
 	await expect(home.multiline).toHaveText('1行目\n2行目');
@@ -138,6 +141,7 @@ test('switches translations to Chinese and back', async ({ page }) => {
 	await expect(home.greeting).toHaveText('你好 John Doe！');
 	await expect(home.itemLabel).toHaveText('1 個項目');
 	await expect(home.countSummary).toHaveText('你有 1（1 個項目）。');
+	await expect(home.memberCountSummary).toHaveText('你有 10 個項目（1 個項目）。');
 	await expect(home.contextMessage).toHaveText('插值情境訊息: 新');
 	await expect(home.summary).toHaveText('你好 John Doe。你有 1 個項目 。');
 	await expect(home.multiline).toHaveText('第 1 行\n第 2 行目');
