@@ -1,5 +1,11 @@
 # sveltext
 
+## 0.4.3
+
+### Patch Changes
+
+- [#47](https://github.com/raycnwong/sveltext/pull/47) [`c763747`](https://github.com/raycnwong/sveltext/commit/c76374752d6e03b023b5af8d2ef2b8fe40220efa) Thanks [@raycnwong](https://github.com/raycnwong)! - Cache Intl plural rules and number formatters per locale to speed up plural translations. Reuse plural rules, category lists, and number formatters during compilation and catalog extraction.
+
 ## 0.4.2
 
 ### Patch Changes
