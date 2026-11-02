@@ -141,6 +141,8 @@ For translation with an explicit catalog, use the pure runtime function `_` (see
 
 `sveltext` catches missing plural categories at compile-time. If you forget any of the categories, the Vite build will fail and point you to the exact line.
 
+For variable counts, `#` is automatically formatted with `Intl.NumberFormat` using the active locale: `1000` becomes `1,000` in English. Numeric literals are formatted using the configured `sourceLocale` and inlined into fixed messages at compile time. With an English source locale, `plural(1000, { one: '# item', other: '# items' })` compiles to the same message as `` t`1,000 items` ``. Use a variable to format numbers using the active locale at runtime.
+
 ```svelte
 <script lang="ts">
 	import { plural } from 'sveltext';
