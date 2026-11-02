@@ -2,7 +2,7 @@
 
 This guide adds `sveltext` to an existing Svelte 5 app using Vite. It covers SvelteKit with server-side rendering (SSR), SvelteKit in SPA mode, and standalone Svelte.
 
-Use Node.js 22.12 or newer to run the commands in this guide. The extractor uses `fs.promises.glob`, which requires Node.js 22 or newer; your app's Vite version also determines its minimum Node.js version.
+`sveltext` requires Node.js 22.12.0 or newer for its CLI and build tooling, matching Commander 15's minimum version. This requirement is declared in `engines.node`. Upgrade Node.js before installing this version if you use an older release; your app's Vite version may require a higher minimum.
 
 The setup has two parts: the Vite plugin compiles translation calls and PO catalogs, and your app chooses a locale, loads its catalog, and initializes the translation context.
 
