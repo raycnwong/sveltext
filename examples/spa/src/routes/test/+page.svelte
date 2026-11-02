@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { t } from 'sveltext';
-	import { title, body } from '$lib/test';
+	import { title, body } from '#lib/test.ts';
 </script>
 
 <section>

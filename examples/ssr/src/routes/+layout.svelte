@@ -1,15 +1,11 @@
 <script lang="ts">
-	import favicon from '$lib/assets/favicon.svg';
 	import { SveltextRoot } from 'sveltext';
 	import Header from './Header.svelte';
 	import Footer from './Footer.svelte';
+	import type { LayoutProps } from './$types';
 
-	let { data, children } = $props();
+	let { data, children }: LayoutProps = $props();
 </script>
-
-<svelte:head>
-	<link rel="icon" href={favicon} />
-</svelte:head>
 
 {#key data.currentLocale}
 	<SveltextRoot locale={data.currentLocale} messages={data.messages}>

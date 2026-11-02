@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { c, msg, plural, T, t } from 'sveltext';
-	import { formatStatus, validateItems } from '$lib/helpers';
+	import { formatStatus, validateItems } from '#lib/helpers.ts';
 	import { enhance } from '$app/forms';
 	import { untrack } from 'svelte';
 	import { superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters/zod4';
-	import { textSchema } from '$lib/schema';
+	import { textSchema } from '#lib/schema.ts';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { invalidateAll } from '$app/navigation';
+	import { refreshAll } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { t } from 'sveltext';
-	import { setCurrentLocale } from '$lib/i18n';
+	import { setCurrentLocale } from '#lib/i18n.ts';
 
 	interface Props {
 		currentLocale: string;
@@ -31,7 +31,7 @@
 				type="button"
 				onclick={() => {
 					setCurrentLocale(lang);
-					invalidateAll();
+					refreshAll();
 				}}
 			>
 				{lang}

@@ -1,5 +1,5 @@
-import type { Handle } from '@sveltejs/kit';
-import { matchLocale, loadMessageCatalog } from '$lib/i18n';
+import type { Handle } from '@sveltejs/kit/hooks';
+import { matchLocale, loadMessageCatalog } from '#lib/i18n.ts';
 import { withSveltext } from 'sveltext/server';
 
 export const handle: Handle = async ({ event, resolve }) => {

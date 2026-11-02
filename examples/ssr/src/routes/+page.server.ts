@@ -2,7 +2,7 @@ import { msg, t } from 'sveltext';
 import { fail } from '@sveltejs/kit';
 import { message, superValidate } from 'sveltekit-superforms/server';
 import { zod } from 'sveltekit-superforms/adapters/zod4';
-import { textSchema } from '$lib/schema';
+import { textSchema } from '#lib/schema.ts';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load = (async () => ({
