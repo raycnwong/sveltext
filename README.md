@@ -93,6 +93,18 @@ Server helpers, load functions, actions, rendering, and asynchronous callbacks i
 
 Calling imported `t` before browser initialization or outside a server translation scope throws an error. Avoid eagerly translated module-level constants such as `export const label = t\`Active\``: modules load before a user's locale is available, and those strings would not update when the locale changes. Shared schemas are fine when translation occurs inside their validation callbacks.
 
+### Reading the current locale
+
+Use `getLocale()` to read the active browser locale or the current server `withSveltext` scope's locale:
+
+```ts
+import { getLocale } from 'sveltext';
+
+const locale = getLocale();
+```
+
+Like `t`, it throws before browser initialization or outside a server translation scope. The returned string is not reactive; call `getLocale()` again after switching locales.
+
 ### Lazy Translations (Module-Level Constants)
 
 Use `msg` for navigation arrays, constants, and other messages that should be translated later. It marks the string for extraction and compiles it to a string descriptor, while deferring the dictionary lookup until `t` or `_` is called. Descriptors use `hash\x1Ckey1\x1Evalue1\x1Dkey2\x1Evalue2`, or just `hash` without arguments. Interpolated values are converted to strings; `\x1D` is reserved as the argument separator.

@@ -64,6 +64,15 @@ test('compiled component and TypeScript translations share isolated server conte
 		);
 	}
 	const noContext = /sveltext: No translation context for `t\(\)`/;
+	assert.throws(() => app.getLocale(), noContext);
+	assert.equal(
+		app.withSveltext(en, () => app.getLocale()),
+		'en',
+	);
+	assert.equal(
+		app.withSveltext(ja, () => app.getLocale()),
+		'ja',
+	);
 	assert.throws(() => app.formatStatus(), noContext);
 	assert.throws(() => app.renderTranslations(en), noContext);
 
@@ -95,6 +104,7 @@ test('compiled component and TypeScript translations share isolated server conte
 	const renders = [en, ja].map((context) =>
 		app.withSveltext(context, async () => {
 			await wait;
+			assert.equal(app.getLocale(), context.locale);
 			return app.renderTranslations(context);
 		}),
 	);
@@ -106,8 +116,10 @@ test('compiled component and TypeScript translations share isolated server conte
 	await app.withSveltext(en, async () => {
 		await app.withSveltext(ja, async () => {
 			await Promise.resolve();
+			assert.equal(app.getLocale(), 'ja');
 			assert.equal(app.formatStatus(), '有効');
 		});
+		assert.equal(app.getLocale(), 'en');
 		assert.equal(app.formatStatus(), 'Active');
 		assert.throws(
 			() =>
@@ -125,5 +137,6 @@ test('compiled component and TypeScript translations share isolated server conte
 		}),
 		/async failure/,
 	);
+	assert.throws(() => app.getLocale(), noContext);
 	assert.throws(() => app.formatStatus(), noContext);
 });

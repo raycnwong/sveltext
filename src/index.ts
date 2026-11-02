@@ -1,8 +1,11 @@
-import { _, translate, type MessageDescriptor } from './runtime.ts';
+import { _, getTranslationContext, translate, type MessageDescriptor } from './runtime.ts';
 export type { MessageCatalog, MessageDescriptor, SveltextContext } from './runtime.ts';
 export { _ };
 export { default as T } from './T.svelte';
 export { default as SveltextRoot } from './SveltextRoot.svelte';
+export function getLocale(): string {
+	return getTranslationContext().locale;
+}
 export function t(descriptor: TemplateStringsArray, ...args: (string | number)[]): string;
 export function t(descriptor: MessageDescriptor): string;
 export function t(...args: any[]): string {
