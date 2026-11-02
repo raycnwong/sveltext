@@ -3,7 +3,7 @@ import type { SveltextContext } from 'sveltext';
 import App from './App.svelte';
 
 export { withSveltext } from 'sveltext/server';
-export { _ } from 'sveltext';
+export { _, getLocale } from 'sveltext';
 export {
 	formatStatus,
 	validate,
