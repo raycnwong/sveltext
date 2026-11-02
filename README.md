@@ -19,6 +19,8 @@ A compiled, Svelte-first i18n library with Gettext-like syntax and ICU plurals.
 
 ## 📦 Getting Started
 
+`sveltext` requires **Node.js 22.12.0 or newer** for its CLI and build tooling. Upgrade Node.js before installing this version if you use an older release.
+
 Please follow the [Setup Guide](https://github.com/raycnwong/sveltext/blob/main/docs/getting-started.md) to install and configure `sveltext`.
 
 ## 📖 Usage
